@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Vocab Test App</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #111827;
+      --primaryText: #ffffff;
+      --okBg: #ecfdf5;
+      --okLine: #10b981;
+      --ngBg: #fef2f2;
+      --ngLine: #ef4444;
+      --soft: #f9fafb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .app {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 12px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.04);
+    }
+    .section { padding: 16px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 28px; font-weight: 800; }
+    h2 { font-size: 20px; font-weight: 800; }
+    h3 { font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+    .sub { color: var(--muted); line-height: 1.6; margin-top: 8px; font-size: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .range-btn, .count-btn, .opt-btn, .ghost-btn, .primary-btn, .icon-btn {
+      appearance: none; border: 1px solid var(--line); background: #fff; color: var(--text);
+      border-radius: 18px; cursor: pointer;
+    }
+    .range-btn, .count-btn { padding: 12px; text-align: left; }
+    .range-btn.active, .count-btn.active { background: var(--primary); color: var(--primaryText); border-color: var(--primary); }
+    .range-btn .small { font-size: 12px; color: inherit; opacity: .75; margin-top: 4px; display: block; }
+    .count-btn { text-align: center; font-weight: 700; }
+    .summary-box { background: var(--soft); border: 1px solid var(--line); border-radius: 18px; padding: 12px; font-size: 14px; line-height: 1.7; }
+    .primary-btn { width: 100%; background: var(--primary); color: var(--primaryText); border-color: var(--primary); padding: 14px; font-size: 16px; font-weight: 800; }
+    .primary-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .ghost-btn { width: 100%; padding: 12px; font-size: 15px; font-weight: 700; background: #fff; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .progress-wrap { padding: 14px 16px 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: #fff; z-index: 2; }
+    .progress-bar { width: 100%; height: 8px; background: #eceef2; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .progress-fill { height: 100%; width: 100%; background: #111827; transition: width 1s linear; }
+    .word-box { background: var(--soft); border: 1px solid var(--line); border-radius: 24px; padding: 16px; }
+    .word { font-size: 34px; font-weight: 800; letter-spacing: .2px; word-break: break-word; }
+    .tiny { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .icon-btn { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; }
+    .opts { display: grid; gap: 8px; }
+    .opt-btn { width: 100%; text-align: left; padding: 14px; font-size: 14px; line-height: 1.6; }
+    .opt-btn.none { background: var(--soft); }
+    .opt-btn.correct { background: var(--okBg); border-color: var(--okLine); }
+    .opt-btn.wrong { background: var(--ngBg); border-color: var(--ngLine); }
+    .result-card { margin-top: 8px; background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 14px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 15px; margin-bottom: 10px; }
+    .ok { color: #047857; }
+    .ng { color: #b91c1c; }
+    .result-body { display: grid; gap: 8px; font-size: 14px; line-height: 1.7; }
+    .example-row { display: flex; align-items: flex-start; gap: 8px; }
+    .example-text { flex: 1; }
+    .score-big { font-size: 52px; font-weight: 800; text-align: center; }
+    .split { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+    .tile { border-radius: 18px; padding: 12px; text-align: center; font-size: 14px; }
+    .tile.ok { background: var(--okBg); color: #065f46; }
+    .tile.ng { background: var(--ngBg); color: #991b1b; }
+    .history-card { background: #fff; border-radius: 22px; border: 1px solid var(--line); padding: 14px; margin-top: 10px; }
+    .history-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .status-pill { font-size: 12px; padding: 4px 8px; border-radius: 999px; font-weight: 700; }
+    .status-pill.ok { background: var(--okBg); color: #065f46; }
+    .status-pill.ng { background: var(--ngBg); color: #991b1b; }
+    .mt-12 { margin-top: 12px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+
+  <script>
+    const RAW_DATA = `1\tbelieve\tを信じる
+2\tconsider\tを見なす
+3\texpect\tを予期する、と思う
+4\tdecide\t決める
+5\tallow\tを許す
+6\tremember\t覚えている
+7\tworry\t心配する
+8\tconcern\tに関係する、を心配させる
+9\tsuggest\tを提案する
+10\texplain\t説明する
+11\tdescribe\tの特徴を述べる
+12\timprove\tを改善する
+13\tproduce\tを生産する
+14\tcreate\tを創造する
+15\tprovide\tを供給する
+16\tincrease\t増える
+17\tgrow\t成長する
+18\tdevelop\tを開発する
+19\trise\t上がる、昇る
+20\traise\tを上げる、（子供）を育てる
+21\tfollow\t次に続く、に従う
+22\trequire\tを要求する
+23\tfill\tを満たす
+24\tsupport\tを支持する
+25\tshare\tを共同で使う
+26\tface\tに直面する、（危険などが）の身に迫る
+27\ttouch\tを感動させる
+28\tstore\tを蓄える
+29\tpay\t（金）を支払う
+30\tdeal\tに対処する，を扱う
+31\tsave\t（時間、金銭など）を節約する
+32\thappen\t（事が）起こる、たまたまする
+33\toccur\t（事が）起こる
+34\twork\t機能する
+35\tchange\tを変える
+36\trun\tを経営する
+37\tturn\tの向きを変える
+38\treturn\t戻る、帰る
+39\tstand\tを我慢する
+40\tlie\t横たわる、うそをつく
+41\tbrain\t脳
+42\tmind\t心、精神
+43\tlanguage\t言語
+44\tthought\t考え
+45\tknowledge\t知識
+46\tskill\t技能、技術
+47\ttechnology\t科学技術
+48\tculture\t文化
+49\texperience\t経験
+50\tresult\t結果
+51\treason\t理由
+52\tcause\t原因
+53\teffect\t影響、効果
+54\tmatter\t問題
+55\tsense\t感覚
+56\tway\t方法、道
+57\tterm\t期間、（専門）用語
+58\tsituation\t状況
+59\tcondition\t状態、状況
+60\tposition\t（所定の）位置、場所、立場
+61\tenvironment\t環境
+62\tnature\t自然
+63\tresearch\t研究、調査
+64\trule\t規則
+65\tinterest\t興味
+66\tvalue\t価値
+67\tview\t意見
+68\tsound\t音
+69\tform\t形状、（記入）用紙
+70\tcase\t場合
+71\trole\t役割
+72\tage\t年齢
+73\tcare\t世話
+74\trisk\t危険（性）
+75\thuman\t人間の
+76\tfree\t自由な
+77\tsure\t確信して
+78\tcertain\t確信して、ある程度の
+79\tmain\t主要な
+80\tmajor\t主要な
+81\tminor\t重要でない
+82\tclear\t明らかな
+83\tlikely\tありそうな
+84\tpossible\tあり得る、可能な
+85\tsimilar\t似ている
+86\tclose\t（ごく）近い
+87\tcommon\t共通の
+88\tgeneral\t一般的な
+89\tordinary\t普通の
+90\tspecific\t明確な
+91\tparticular\t特別の
+92\tindividual\t個人の
+93\tunique\t特有の
+94\trare\t珍しい、まれな
+95\ttherefore\tしたがって、その結果
+96\tthus\tしたがって
+97\tmoreover\tそのうえ、さらに
+98\tfurthermore\tそのうえ
+99\tbesides\tそのうえ
+100\tnonetheless\tそれにもかかわらず
+101\tnotice\t気づく
+102\tnote\t注意する、注目する
+103\tdiscover\tを発見する
+104\trealize\t（はっきりと）理解する
+105\trecognize\tをそれとわかる
+106\tencourage\tを励ます
+107\tforce\t（人）に無理やりさせる
+108\torder\tを注文する
+109\taffect\tに影響する
+110\toffer\t（人）に（物・事）を提供する
+111\tdemand\tを要求する
+112\targue\tと主張する
+113\tclaim\tを主張する
+114\tobject\t反対する
+115\tchallenge\tに異議を唱える
+116\tinvolve\tを巻き込む
+117\tinclude\tを含む
+118\tcontain\tを含む
+119\trelate\tを関連づける
+120\tconnect\tをつなぐ
+121\trefer\t言及する
+122\tcontact\tと連絡する
+123\tcompare\tを比べる
+124\tmeasure\tを測る
+125\tmark\t（印など）をつける
+126\tapproach\t近づく
+127\treach\tに到着する
+128\tachieve\tを達成する
+129\treceive\tを受け取る
+130\tcomplete\tを完成させる
+131\tlead\tを導く
+132\twin\t勝つ
+133\tlose\tを失う
+134\tfail\tできない
+135\tmiss\tに乗り遅れる
+136\tlack\tに欠けている、が不足している
+137\treduce\tを減らす
+138\tavoid\tを避ける
+139\tlimit\tを制限する
+140\tprevent\tを妨げる
+141\twear\tを身に着けている
+142\tbear\tを我慢する、を（心に）抱く
+143\tfocus\tを集中させる
+144\tauthor\t著者
+145\tprofessor\t教授
+146\tsentence\t文、（宣告された）刑
+147\tpassage\t（文章の）一節
+148\tmessage\t伝言、メッセージ
+149\tstatement\t陳述
+150\ttopic\t論題、話題
+151\tarticle\t記事
+152\tissue\t問題
+153\ttheory\t理論
+154\tevidence\t証拠
+155\texperiment\t実験
+156\tsubject\t（研究、話などの）主題
+157\tgovernment\t政府
+158\tpolicy\t政策、方針
+159\teducation\t教育
+160\tcompany\t会社
+161\tcolleague\t同僚
+162\tindustry\t産業
+163\ttrade\t貿易
+164\teconomy\t（国家などの）経済
+165\tcustomer\t顧客
+166\tbenefit\t（物質的、精神的）利益
+167\tfigure\t図
+168\trate\t比率
+169\tchance\t見込み
+170\topportunity\t機会
+171\tproject\t事業
+172\tpractice\t練習
+173\teffort\t努力
+174\tquality\t質
+175\tquantity\t量
+176\tamount\t金額
+177\tscientific\t科学の
+178\tpolitical\t政治の
+179\tsocial\t社会の
+180\tofficial\t公式の
+181\tfinancial\t財政（上）の
+182\texpensive\t高価な
+183\tvarious\tさまざまな
+184\tnormal\t普通の
+185\tfamiliar\tよく知っている
+186\tappropriate\t適切な
+187\tnecessary\t必要な
+188\tcorrect\t正しい
+189\tavailable\t利用できる、入手できる
+190\ttypical\t典型的な
+191\tpositive\t積極的な
+192\tnegative\t好ましくない、消極的な
+193\tpassive\t受動的な
+194\tphysical\t身体の
+195\tmental\t精神の
+196\trather\tむしろ、かなり
+197\tinstead\tその代わりに
+198\totherwise\tそうでなければ、それ以外は
+199\tsomehow\tどうにかして
+200\tsomewhat\tいくぶん
+201\twonder\tと思う
+202\tsuppose\t（たぶん）と思う、もしならば
+203\timagine\tを想像する
+204\tregard\tを見なす
+205\twish\tと思う
+206\tdetermine\tを決定する
+207\texpress\tを表現する
+208\trepresent\tを象徴する、を代表する
+209\tidentify\tを特定する
+210\tmention\tに言及する
+211\tsolve\tを解決する
+212\tprove\tを証明する
+213\tcommunicate\t意思を通じ合う
+214\trespect\tを尊敬する
+215\tprefer\tのほうを好む
+216\tdesign\tを設計する
+217\testablish\tを設立する
+218\tfound\tを設立する
+219\tpublish\tを出版する
+220\tserve\t役に立つ
+221\tsupply\tを供給する
+222\tapply\t申し込む、を適用する
+223\ttreat\tを扱う、を治療する
+224\tsearch\t（場所など）を探す、捜索する
+225\tprepare\t準備する
+226\tprotect\tを保護する
+227\tpick\tを選び取る、を摘む
+228\tfit\tピッタリ合う、うまく合う
+229\tgain\tを（努力して）手に入れる
+230\tenter\tに入る
+231\tspread\t広がる
+232\tadvance\t前進する
+233\ttend\t傾向がある
+234\tdepend\t依存する
+235\texist\t存在する
+236\tdecline\t減る、衰える
+237\tdecrease\t減る
+238\twaste\tを浪費する
+239\tdamage\t（物、体の一部）に損害を与える
+240\tsuffer\t苦しむ
+241\tact\t行動する
+242\tperform\tを行う
+243\tspecies\t（生物の）種
+244\tvariety\t多様（性）
+245\tdegree\t程度
+246\trange\t範囲
+247\tstandard\t水準、基準
+248\tmedium\t（伝達などの）媒体
+249\tadvantage\t有利な点
+250\ttask\t（課された）任務、仕事
+251\trest\t残り、息
+252\tpurpose\t目的
+253\tfeature\t特徴
+254\tfactor\t要因、要素
+255\tshape\t形、体調
+256\timage\tイメージ、印象
+257\tdetail\t詳細（な情報）
+258\tcharacter\t性格
+259\tfunction\t機能
+260\tstructure\t構造
+261\tground\t地上
+262\tinfluence\t影響
+263\tdisease\t病気
+264\tpain\t痛み、骨折り、苦労
+265\tmedicine\t薬
+266\tdeath\t死
+267\tfear\t恐怖（心）
+268\tmemory\t記憶（力）
+269\temotion\t（喜怒哀楽の）感情
+270\tmovement\t（政治的な）運動
+271\tregion\t（広大な）地域
+272\tclimate\t（長期的な）気候
+273\ttemperature\t体温
+274\tcommunity\t地域社会
+275\tpopulation\t人口
+276\tgeneration\t世代
+277\tpresent\t出席している、現在の
+278\trecent\t最近の
+279\tcurrent\t現在の
+280\tancient\t古代の
+281\tprevious\t前の
+282\tserious\t真剣な
+283\tcareful\t注意深い
+284\tresponsible\t責任がある
+285\tactive\t活動的な
+286\tafraid\t恐れて
+287\taware\t気づいて
+288\tpatient\t我慢強い
+289\twhole\t全体の
+290\tlow\t低い
+291\thuge\t巨大な
+292\tblank\t空白の
+293\tcentral\t中心的な
+294\tsafe\t安全な
+295\twild\t野生の
+296\teventually\t結局（は）
+297\tunfortunately\t残念なことに
+298\tseemingly\t見たところ
+299\tafterward\t後で
+300\taltogether\t完全に
+301\tassume\t当然と思う
+302\tguess\tと思う
+303\tassociate\tから連想する
+304\tdesire\tを強く望む
+305\tindicate\tを示す
+306\trespond\t応答する
+307\treply\t返事を出す
+308\tattempt\tを試みる
+309\tmanage\tをなんとかやり遂げる、をうまく扱う
+310\tmaintain\tを維持する、を主張する
+311\tunite\t結合する
+312\tjoin\t（会、団体、人）に加わる
+313\tattract\tを引きつける
+314\tmatch\t調和する
+315\tattack\tを襲う、攻撃する
+316\tseek\tを探し求める
+317\tengage\t従事する、を引き入れる
+318\tsucceed\t成功する、継承する
+319\tmarry\tと結婚する
+320\tattend\tに出席する
+321\tsatisfy\tを満足させる
+322\tsurvive\t（切り抜けて）生き残る
+323\tpromote\tを促進する
+324\tearn\tを稼ぐ
+325\tfeed\tに食べ物を与える
+326\ttaste\t～の味がする
+327\tsmell\t～のにおいがする
+328\tadapt\t（…に）順応する(to)
+329\tadopt\t（考え、方針）を採用する
+330\tadjust\tを調節する
+331\tseparate\tを分離する
+332\texchange\t交換する
+333\treplace\tを取り替える
+334\tremove\tを取り去る
+335\trelease\t（ガスなど）を放出する
+336\tdisappear\t姿を消す
+337\tobserve\tを観察する
+338\testimate\tと推定する
+339\treveal\tを明らかにする、暴露する
+340\temerge\t現れる
+341\tarise\t（問題、困難、機会などが）生じる
+342\tcitizen\t国民
+343\tcareer\t経歴
+344\tincome\t（定期）収入
+345\tbillion\t10億
+346\tbill\t請求書、勘定（書）
+347\tcharge\t（サービスに対する）料金
+348\titem\t品目、項目
+349\tscale\t規模
+350\tsite\t場所、用地
+351\tsection\t部分
+352\tcrop\t（農）作物
+353\tdiet\t（日常の）食事
+354\tsource\t源
+355\tresource\t資源
+356\tmoment\t瞬間
+357\tdecade\t10年間
+358\tstage\t（発達、変化の）段階
+359\taspect\t（物事の）側面
+360\tsort\t種類
+361\tinstance\t（具体）例
+362\tlink\t関連、つながり
+363\tcontrast\t対照
+364\taccess\t利用、入手
+365\tdevice\t装置
+366\tsurvey\t（アンケートによる意識などの）調査
+367\ttechnique\t技術
+368\tcontent\t中身
+369\tsurface\t表面
+370\tconcept\t概念
+371\tdifficulty\t困難、苦労
+372\ttrouble\t困難
+373\tcrime\t犯罪
+374\tattitude\t態度
+375\thabit\t（個人的な）習慣
+376\twhatever\tたとえ何を…しても、たとえ何が…であろうと
+377\turban\t都市の
+378\trural\t田園の、田舎の
+379\tlocal\tその土地の、地元の
+380\tnative\t生まれた土地の
+381\tsmart\t頭の良い
+382\tintelligent\t知能の高い、聡明な
+383\tintellectual\t知的な
+384\tpotential\t潜在的な
+385\tmoral\t道徳（上）の
+386\tprivate\t個人的な
+387\tequal\t等しい、平等な
+388\tfair\t公正な、(数量などが)かなりの
+389\tentire\t全体の
+390\tinitial\t初期の
+391\tessential\t必要不可欠な
+392\tsignificant\t重要な
+393\tterrible\tひどい
+394\tdigital\tデジタル(方式)の
+395\tdirect\t直接の
+396\tnearly\tもう少しで
+397\tmerely\t単に
+398\tseldom\tめったに…ない
+399\tlately\t最近
+400\tapart\t（空間、時間的に）離れて
+401\ttrust\tを信頼する
+402\tpromise\tを約束する
+403\tpredict\tを予測する
+404\treflect\tを反映する、を反射する
+405\trecall\tを思い出す
+406\trely\t頼る
+407\tcommit\t（罪、過失など）を犯す、（金、人、時間など）を投入する
+408\tappreciate\tをありがたく思う、を正しく認証（評価）する
+409\tpraise\tを褒める
+410\tdoubt\tを疑わしいと思う、ではないと思う
+411\tcomplain\t不平を言う
+412\tignore\tを無視する
+413\twarn\tに警告する
+414\tgather\tを集める、拾い集める
+415\tacquire\t（習慣など）を身に付ける
+416\texamine\tを調べる
+417\tscore\t（試合、テストで）（点）をとる
+418\tjudge\tを判断する
+419\tselect\tを選び出す
+420\tdivide\tを分ける
+421\tdistinguish\tを区別する
+422\tgraduate\t卒業する
+423\tshift\t（位置、方針など）を変える
+424\thide\tを隠す
+425\tmix\tを混ぜる
+426\tfix\tを修理する
+427\tdisplay\tを示す
+428\tdefine\tを定義する
+429\tinvent\tを発明する
+430\tvary\t異なる、多様である
+431\texpand\tを拡大する
+432\tevolve\t進化する、発展する
+433\tconfuse\tを混同する
+434\tconsume\tを消費する
+435\tcompete\t競う
+436\trepeat\tを繰り返す
+437\trepair\tを修理する
+438\tremind\tに思い出させる
+439\trefuse\tを拒む
+440\treject\tを拒絶する
+441\tdeny\tを否定する
+442\tdestroy\tを破壊する
+443\taudience\t観衆、聴衆
+444\trace\t民族、人種
+445\tconflict\t争い
+446\tdebate\t論争
+447\tstruggle\t懸命の努力、奮闘
+448\tstrategy\t戦略
+449\tprogress\t進歩
+450\tprinciple\t原則、原理
+451\telement\t要素
+452\torigin\t起源
+453\tbirth\t出産
+454\tancestor\t祖先
+455\tcell\t細胞
+456\tgene\t遺伝子
+457\tscene\t場面
+458\ttrend\t傾向
+459\ttraffic\t交通（量）
+460\ttrack\t（車などが通った）跡
+461\tseries\t連続
+462\tcontext\t状況
+463\tbackground\t（景色、事件などの）背景
+464\tbasis\t基準
+465\tstatus\t地位、身分
+466\tvolunteer\tボランティア
+467\tstaff\tスタッフ、職員
+468\tduty\t義務
+469\tlabor\t労働
+470\treward\t褒美
+471\taim\t目的
+472\tfun\t楽しみ、おもしろいこと（人）
+473\tcrowd\t群衆
+474\trevolution\t革命
+475\tpoverty\t貧困
+476\tconsequence\t結果
+477\tsequence\t連続、（連続するものの）順番
+478\tcomplex\t複雑な
+479\tcomplicated\t複雑な
+480\tfalse\t誤った
+481\talternative\t代替の
+482\textreme\t極端な
+483\tideal\t理想的な
+484\tprimary\t最も重要な
+485\tworth\t価値のある
+486\tobvious\t明らかな
+487\tlegal\t法律（上）の
+488\tcommercial\t商業的な、営利的な
+489\tartificial\t人工の
+490\tchemical\t化学の
+491\tbiological\t生物（学）の
+492\tformer\t元の
+493\tmobile\t（物が）可動［移動］式の
+494\tstraight\tまっすぐな
+495\tregular\t定期的な
+496\tindependent\t（人が）自立した
+497\toverseas\t海外へ
+498\tunlike\t～と違って
+499\tvia\t～媒介で
+500\twhereas\t…だけれども
+501\tperceive\tを知覚する
+502\tfascinate\tを魅了する
+503\tbore\tを退屈させる
+504\tdisappoint\tを失望させる
+505\timply\tそれとなく言う
+506\trecommend\tを勧める
+507\tdemonstrate\tを証明する
+508\tconclude\tと結論づける
+509\tannounce\tを発表する
+510\tappeal\t心に訴える
+511\taddress\t（問題）に取り組む、（人）に演説する
+512\tadvertise\tを宣伝する
+513\tinvite\tを招待する
+514\tafford\tを持つ余裕がある
+515\tpurchase\tを購入する
+516\tparticipate\t参加する
+517\tbelong\t所属している、ものである
+518\tconduct\tを行う
+519\tbehave\t振る舞う
+520\toperate\tを操作する、手術を行う
+521\torganize\tを主催する、準備する
+522\thost\tを主催する
+523\tcombine\tを組み合わせる
+524\tdeliver\t配達する
+525\tlocate\tを（場所に）置く
+526\tencounter\tに（偶然）出会う
+527\tsurround\tを囲む
+528\texplore\tを探検する
+529\tstick\tくっつく、固執する、を貼り付ける
+530\tstrike\tに当たる、（人）に印象を与える
+531\thurt\tを痛める
+532\tbite\tにかみつく
+533\ttear\tを引き裂く
+534\taid\tを援助する
+535\tpress\tを押す
+536\tburn\tを燃やす
+537\tflow\t流れる
+538\tpreserve\tを保存する
+539\tborrow\tを（無料で）借りる
+540\tsteal\tを盗む
+541\tescape\t逃れる、脱出する、を免れる
+542\tneighbor\t隣人、近所の人
+543\thousehold\t世帯
+544\tresident\t居住者、住人
+545\tvehicle\t車、乗り物
+546\twheel\t（自動車の）ハンドル
+547\tdelay\t遅れ
+548\tfuel\t燃料
+549\tpollution\t汚染
+550\tatmosphere\t雰囲気
+551\telectricity\t電気
+552\tcancer\t癌
+553\tplague\t疫病
+554\tthreat\t恐れ、予兆
+555\tflood\t洪水
+556\tearthquake\t地震
+557\tdisaster\t災害
+558\tcrisis\t危機
+559\tvictim\t被害者、犠牲者
+560\twealth\t富、財産
+561\tfund\t資金、基金
+562\tcapital\t資本
+563\tprofit\t収益
+564\ttalent\t才能
+565\tcapacity\t能力
+566\tscholar\t（主に人文系の）学者
+567\ttradition\t伝統
+568\tliterature\t文学
+569\tlecture\t講義、講演
+570\tmanner\t方法、行儀、作法
+571\tsymbol\t象徴
+572\tanalysis\t分析
+573\tversion\t…版
+574\tperspective\t観点
+575\tvision\t（将来の）展望
+576\tsight\t見えること
+577\tinsight\t洞察（力）
+578\tbilingual\tバイリンガルの，2言語を話す
+579\tcapable\t能力がある
+580\twilling\tをいとわない
+581\teager\t熱望して
+582\tamazing\t驚くほどの
+583\tcalm\t冷静な
+584\tquiet\t静かな
+585\tsenior\t高齢者の、（地位などが）上級の
+586\telderly\t年配の
+587\tfirm\t確固とした
+588\tsevere\t（痛みなどが）ひどい、厳しい
+589\ttough\t困難な
+590\trapid\t急速な
+591\timmediate\t即座の
+592\tvast\t広大な
+593\tenormous\t巨大な、莫大な
+594\tbroad\t広範囲な
+595\tnarrow\t（幅が）狭い
+596\ttiny\tとても小さな
+597\tefficient\t効率の良い
+598\tconstant\t絶え間ない
+599\tnearby\tすぐ近くの
+600\tdistant\t遠い
+601\tinsist\t断固要求する
+602\tintend\tを意図する、つもりでいる
+603\tinspire\tを奮起させる
+604\temphasize\tを強調する、力説する
+605\tpropose\tを提案する
+606\tpersuade\tを説得する
+607\tconvince\tに納得させる
+608\tadmit\tを（事実と）認める
+609\tfavor\tに賛成する、を好む
+610\texcuse\tを大目に見る、の言い訳をする
+611\tinterpret\tを解釈する
+612\ttranslate\tを翻訳する
+613\tconcentrate\t精神を集中する
+614\tcriticize\tを非難する
+615\tblame\tを（～のことで）責める(for)、を（～の）せいにする(on)
+616\toppose\tに反対する
+617\tinform\tに知らせる
+618\tgrant\t（人）に（物）を（求めに応じて）与える
+619\tobtain\tを得る
+620\ttransform\tを変える
+621\talter\tを変える
+622\tarrange\tを（きちんと）並べる、手はずを整える
+623\tinteract\t相互に作用する
+624\thandle\t（問題など）を処理する
+625\textend\tを延長する
+626\tsettle\t定住する、を決める
+627\tcontribute\t貢献する、を寄付する
+628\tconstruct\tを建設する
+629\tconsist\t成る、（本質が）ある
+630\tsuit\tに（色、服などが）似合う、に都合がよい
+631\ttie\tを結びつける
+632\tdiffer\t異なる
+633\thate\tをひどく嫌う、憎む
+634\tdislike\tを嫌う
+635\tdisagree\t意見が合わない
+636\tregret\tを後悔する、を残念に思う
+637\temploy\tを雇用する、を（手段などに）用いる
+638\thire\tを雇う
+639\tabsorb\t（人）を夢中にさせる
+640\texpose\tをさらす
+641\tbreathe\t呼吸する
+642\troot\t起源、ルーツ
+643\timmigration\t（外国からの）移住
+644\ttribe\t部族
+645\tlandscape\t風景
+646\tagriculture\t農業
+647\tsoil\t土壌、土
+648\tmine\t鉱山
+649\tmass\t大衆
+650\tquarter\t四分の一
+651\tera\t時代
+652\tcircumstance\t状況、事情
+653\tphenomenon\t現象
+654\tcustom\t（社会の）慣習
+655\treligion\t宗教
+656\tcivilization\t文明
+657\tuniverse\t宇宙
+658\tdiversity\t多様性
+659\ttrait\t（人の性格などの）特性，特徴
+660\treview\t批評、再検討
+661\toccasion\t場合、時
+662\tcampaign\t（政治的、社会的）運動、活動
+663\tboard\t委員会、重役会
+664\tfacility\t施設
+665\tcourt\t法廷、裁判所
+666\ttrial\t裁判
+667\tlaboratory\t研究所、実験室
+668\tinstrument\t道具、機器
+669\tinstruction\t指示
+670\tdocument\t書類
+671\ttarget\t目標
+672\toutcome\t結果
+673\tmuscle\t筋肉
+674\twage\t賃金
+675\tgender\t（男女の）性
+676\tconfidence\t自信
+677\tcredit\t信用
+678\tconscious\t意識して、自覚して
+679\tanxious\t心配して、切望して
+680\tasleep\t眠って
+681\talive\t生きている
+682\talike\t似ている
+683\texcellent\t秀でている
+684\todd\t奇妙な
+685\tsensitive\t敏感な
+686\tsensible\t賢明な
+687\tviolent\t暴力的な
+688\tmilitary\t軍（隊）の、軍事の
+689\tnuclear\t原子力の、核の
+690\tcontemporary\t現代の
+691\telementary\t初等（教育）の
+692\tannual\t年１回の
+693\tchief\t第一の、主要な
+694\tactual\t実際の
+695\tvirtual\t仮想の
+696\tnumerous\t多数の
+697\tmultiple\t多くの(部分から成る)
+698\twidespread\t広範囲にわたる
+699\tsufficient\t十分な
+700\tempty\t空の
+701\tconfirm\tを裏付ける、(本当だと)確認する
+702\tillustrate\tを説明する、を例証する
+703\tspell\t（語）をつづる
+704\tbother\tを困らせる
+705\tannoy\tをいらいらさせる、悩ます
+706\tdisturb\tを邪魔する
+707\tdiscourage\tを思いとどまらせる、を落胆させる
+708\tembarrass\tを当惑させる、に恥ずかしい思いをさせる
+709\tfrighten\tを怖がらせる
+710\tpuzzle\tを当惑させる
+711\tupset\tを動揺させる
+712\tstimulate\tを刺激する
+713\tbeat\tを打ち負かす、（続けざまに）打つ
+714\tblow\t（風が）吹く
+715\tinjure\tを傷つける
+716\tcure\tを治す
+717\trecover\t回復する
+718\tovercome\tを克服する
+719\tquit\tをやめる
+720\ttransfer\tを移す
+721\ttransport\tを輸送する
+722\texport\tを輸出する
+723\timport\tを輸入する
+724\tinvest\t投資する
+725\tinvestigate\tを調査する
+726\tmanufacture\tを(大量に)製造する
+727\treact\t反応する
+728\taward\t（人）に（賞など）を授与する
+729\tban\tを（公式に）禁止する
+730\tprohibit\tを禁止する
+731\tforbid\tを禁じる
+732\tabandon\tを捨てる
+733\tfreeze\t凍る
+734\tlift\tを持ち上げる
+735\thang\tを掛ける
+736\tshake\tを振る
+737\tstretch\tを（引っ張って）伸ばす、広げる
+738\tlay\tを置く、敷く
+739\tstare\tじっと見つめる
+740\tgaze\t見つめる
+741\tcapture\tを捕らえる
+742\tbreed\tを繁殖させる、飼育する、（動物が）子を産む
+743\tmammal\t哺乳類、哺乳動物
+744\tape\t類人猿
+745\tinsect\t昆虫
+746\tinfant\t乳児
+747\torgan\t臓器
+748\tweb\t（ワールドワイド）ウェブ
+749\tfossil\t化石
+750\tbattle\t戦闘
+751\tenemy\t敵
+752\tweapon\t兵器、武器
+753\tarm\t腕、武器、兵器
+754\tarmy\t陸軍
+755\tnavy\t海軍
+756\tborder\t境界線、国境
+757\tbarrier\t障壁
+758\tphilosophy\t哲学
+759\tpsychology\t心理学
+760\talarm\t警報（機）；目覚まし時計
+761\tharm\t害
+762\tdepression\tうつ病、不景気
+763\tdisadvantage\t不利（な点）
+764\tshortage\t不足
+765\tstock\t在庫品
+766\tloan\tローン、貸付金
+767\tbudget\t予算（案）
+768\tinnovation\t革新
+769\tunion\t組合
+770\tunit\t（最小）単位
+771\tmaterial\t材料、原料
+772\tsubstance\t物質
+773\tstuff\t持ち物、材料
+774\tproportion\t割合
+775\tedge\tへり
+776\tcode\t規範；暗号
+777\tmystery\tなぞ
+778\tcurious\t好奇心の強い
+779\tstrict\t厳しい
+780\tfrank\t率直な
+781\tpolite\t丁寧な
+782\taggressive\t攻撃的な
+783\taccurate\t正確な
+784\texact\t正確な
+785\tproper\t適切な
+786\tbrief\t短時間の
+787\textraordinary\t並外れた
+788\tflexible\t柔軟な
+789\tpleasant\t快い、楽しい
+790\tcomfortable\t心地よい、快適な
+791\tstable\t安定した
+792\tthick\t分厚い
+793\tthin\tやせた
+794\tabstract\t抽象的な
+795\tconcrete\t具体的な
+796\tabsolute\t絶対的な
+797\tprime\t最も重要な，第一の
+798\tvital\t極めて重要な
+799\tcontrary\t相反する
+800\tregardless\t気にかけない
+801\tpermit\t許可する
+802\tsuspect\tではないかと思う
+803\tpursue\tを追求する、（仕事など）に従事する
+804\tpretend\tふりをする
+805\tcalculate\tを計算する
+806\tguarantee\tを保証する、確約する
+807\tacknowledge\tを認める
+808\timpress\tを感動させる
+809\turge\tを熱心に勧める
+810\tconvey\tを伝達する
+811\tcelebrate\t（行事など）を祝う
+812\tadmire\t感嘆する
+813\tdevote\t（時間など）を充てる
+814\tdominate\tを支配する、統治する
+815\teliminate\tを取り除く
+816\trestrict\tを制限する
+817\tisolate\tを切り離す
+818\tendanger\tを（滅亡の）危険にさらす
+819\tsecure\tを確保する
+820\treserve\tを予約する
+821\tpossess\t（性質・能力など）を持っている
+822\tlaunch\tを始める
+823\tdetect\tを見つける、検出する
+824\treverse\tを逆転させる、転換する
+825\tconvert\tを変える
+826\thurry\t急ぐ
+827\trush\t急いで行く
+828\troll\t転がる
+829\tcrash\t（大きな音を立てて）衝突する
+830\tbury\tを埋める
+831\tdig\tを掘る
+832\tattach\tを付ける、愛着を抱いている
+833\tmelt\t（熱で）溶ける
+834\taccompany\tと一緒に行く
+835\tassist\t（人）を手伝う
+836\tcope\t（うまく）対処する
+837\tlend\t（人）に（物）を貸す
+838\trent\tを賃借りする
+839\towe\t（人）に（金など）を借りている、おかげである
+840\tapologize\t謝る
+841\tforgive\t（人の罪など）を許す
+842\ttongue\t言語
+843\tdialect\t方言
+844\taccent\tなまり、方言
+845\tcolony\t植民（地）
+846\tgrain\t穀物
+847\tharvest\t収穫
+848\tingredient\t（料理の）材料
+849\tportion\t部分、（食べ物の）一人前
+850\thunger\t飢え
+851\tobesity\t肥満
+852\tburden\t（精神的）負担、重荷
+853\temergency\t緊急（事態）
+854\tdebt\t借金
+855\tcontract\t契約
+856\tclient\t得意客
+857\ttherapy\t（心理）療法
+858\tphysician\t内科医、医師
+859\tdemocracy\t民主主義
+860\telection\t選挙
+861\tvote\t投票
+862\tcandidate\t候補者
+863\tminister\t大臣
+864\tconference\t会議
+865\tceremony\t式典、儀式
+866\tinstitution\t機関、制度
+867\tcorporation\t（大）企業
+868\tcooperation\t協力、共同
+869\tauthority\t当局
+870\ttheme\t主題、テーマ
+871\tnotion\t考え
+872\thypothesis\t仮説
+873\tdiscipline\t規律、しつけ
+874\troute\t道（筋）
+875\troutine\t日課、決まりきった仕事
+876\tdestination\t目的地
+877\tdomestic\t国内の
+878\tethnic\t民族の、人種の
+879\talien\t異質の
+880\tvisible\t目に見える
+881\tverbal\t言葉による
+882\tfundamental\t基本の
+883\tconventional\t従来の、ありきたりの
+884\trelevant\t関係のある
+885\trational\t合理的な
+886\tprecise\t正確な
+887\tprincipal\t主要な
+888\tcrucial\t重大な
+889\tpermanent\t永続的な
+890\tintense\t激しい、強烈な
+891\tequivalent\t相当する
+892\tfrequent\t頻繁な
+893\tsudden\t急な
+894\ttemporary\t臨時の、一時的な
+895\tinternal\t内部の
+896\texternal\t外部の
+897\tdistinct\tまったく異なる
+898\textinct\t絶滅した
+899\texhausted\t疲れ果てた
+900\tevil\t邪悪な
+901\tgreet\t（人）にあいさつする
+902\tchat\tおしゃべりをする
+903\tremark\tと述べる、言う
+904\tcommand\tを命ずる
+905\tutter\t（言葉など）を発する
+906\tdeclare\tを宣言する
+907\tpronounce\tを発音する
+908\tcorrespond\t一致する、（手紙などで）連絡を取り合う
+909\timitate\tをまねる
+910\tresemble\tに似ている
+911\texhibit\tを（展覧会などに）展示する、（感情、兆候など）を示す
+912\tdistribute\tを分配する
+913\tattribute\t（結果）を（～の）せい[おかげ]と考える(on)
+914\tevaluate\tを評価する
+915\tassess\tを評価する
+916\tdeserve\tに値する
+917\tweigh\tの重さがある、の重さを量る
+918\tstrengthen\tを強くする
+919\tweaken\tを弱める
+920\tapprove\t賛成する
+921\tassign\t（仕事など）を割り当てる
+922\tsustain\tを持続させる
+923\taccomplish\tを成し遂げる
+924\trelieve\t（苦痛など）を和らげる、（不安など）を減らす
+925\tfrustrate\tに不満を抱かせる
+926\tscare\tを怖がらせる
+927\tresist\tを我慢する
+928\tprotest\t抗議する
+929\tshut\tを閉める
+930\tdefeat\t（対戦相手）を負かす
+931\tneglect\tを怠る
+932\tretire\t引退する
+933\treform\tを改革する、改善する
+934\tcollapse\t崩壊する、倒れる
+935\truin\tを台無しにする
+936\tsink\t沈む
+937\tpile\tを積み重ねる
+938\tderive\tを得る、引き出す、由来する
+939\tyield\tを産出する、（利益など）を生む、屈する
+940\toccupy\tを占める、を占領する
+941\twrap\tを包む
+942\tembrace\tを抱きしめる、（申し出など）を受け入れる
+943\tlength\t（物や時間の）長さ
+944\theight\t高度
+945\tvolume\t（総）量、体積、容積
+946\tsum\t金額
+947\tframe\t額縁
+948\tboundary\t境界（線）
+949\tdistrict\t（行政などの）地区
+950\tterritory\t領土
+951\tsquare\t正方形
+952\tempire\t帝国
+953\theritage\t（文化、自然）遺産
+954\tfee\t料金
+955\tdiscount\t割引
+956\tcharity\t慈善事業
+957\tmission\t使命、任務
+958\tprofession\t（専門的な）職業
+959\tslave\t奴隷
+960\twitness\t目撃者
+961\tincident\t出来事
+962\tinsurance\t保険
+963\twelfare\t福祉
+964\ttreasure\t宝物
+965\tleisure\t余暇
+966\tpriority\t優先事項
+967\treputation\t評判
+968\thonor\t光栄
+969\tstatue\t像、彫像
+970\tarchitecture\t建築（学）
+971\tlogic\t論理
+972\tmechanism\t仕組み
+973\tclue\t手がかり
+974\tmeans\t手段
+975\ttrap\tわな
+976\ttrick\t策略、いたずら
+977\tguard\t警戒；護衛者
+978\tinnocent\t無罪の
+979\tguilty\t罪悪感のある、有罪の
+980\trude\t無礼な
+981\tshy\t内気な、恥ずかしがりの
+982\tliberal\t寛大な
+983\tstupid\t愚かな
+984\treluctant\t気が進まない
+985\tgenerous\t気前のよい
+986\tmodest\t控えめな
+987\tlonely\t（孤独で）寂しい
+988\tpure\t純粋な
+989\tgrand\t豪華な、雄大な
+990\tadequate\t十分な
+991\tapparent\t（見て）明らかな、見たところ?らしい
+992\tclassic\t（芸術などが）最高水準の、典型的な
+993\tremote\t遠く離れた
+994\tsolid\t固体の、しっかりした
+995\traw\t生の
+996\tplain\t平易な
+997\tprimitive\t原始の
+998\tsteady\t着実な
+999\tslight\tわずかな
+1000\tsubtle\t微妙な
+1001\tdelight\t大喜びさせる
+1002\tentertain\t楽しませる
+1003\tfulfill\t満たす
+1004\tcheer\t元気づける
+1005\tamuse\t笑わせる
+1006\tanticipate\t予期する
+1007\tconfront\t立ちはだかる
+1008\tundergo\t経験する
+1009\texceed\t超える
+1010\toverwhelm\tまいらせる
+1011\tshoot\t撃つ
+1012\tmurder\t殺害する
+1013\trob\t奪う
+1014\tdeprive\t奪う
+1015\trid\tを取り除く
+1016\tinterrupt\tさえぎる
+1017\tinterfere\t邪魔する
+1018\tbully\tいじめる
+1019\tdefend\t守る
+1020\trescue\tを救う
+1021\taccuse\t非難する
+1022\tsue\t訴える
+1023\twander\tぶらつく，歩き回る
+1024\tchase\t追いかける
+1025\tarrest\t逮捕する
+1026\tsubmit\t提出する
+1027\tpunish\t罰する
+1028\tresolve\t解決する
+1029\tjustify\t正当化する
+1030\trestore\t修復する
+1031\tmodify\t修正する
+1032\timpose\t押しつける
+1033\tcompose\t構成する
+1034\tclassify\t分類する
+1035\tsubstitute\t代わりに使う
+1036\tshrink\t縮む
+1037\tlean\t寄りかかる
+1038\tfold\t折り畳む
+1039\tload\t積む
+1040\tpour\t注ぐ
+1041\tfloat\t浮かぶ
+1042\tshine\t輝く
+1043\teditor\t編集者
+1044\tpoetry\t詩
+1045\tusage\t使い方
+1046\tsector\t部門、分野
+1047\tspan\t期間
+1048\tliteracy\t読み書きの能力
+1049\tsymptom\t症状
+1050\tphase\t段階
+1051\tsurgery\t手術
+1052\tvirus\tウイルス
+1053\tpoison\t毒
+1054\tprotein\tタンパク質
+1055\tliquid\t液体
+1056\toxygen\t酸素
+1057\tglobe\t世界
+1058\tpole\t極(地)
+1059\tvalley\t谷
+1060\tconservation\t(環境)保護
+1061\tchannel\t伝達経路
+1062\tglacier\t氷河
+1063\tpioneer\t先駆者
+1064\tprospect\t見込み
+1065\tenthusiasm\t熱狂，熱中
+1066\tpassion\t情熱
+1067\tfortune\t財産
+1068\tobstacle\t障害（物）
+1069\tprejudice\t偏見
+1070\tjustice\t正義
+1071\topponent\t相手、敵
+1072\tsacrifice\t犠牲
+1073\tfault\t責任
+1074\tprison\t刑務所
+1075\tshelter\t避難（所）
+1076\tcommittee\t委員会
+1077\tritual\t儀式
+1078\tmature\t大人になった
+1079\tmoderate\t適度な
+1080\tneutral\t中立の
+1081\toptimistic\t楽観的な
+1082\tpessimistic\t悲観的な
+1083\tradical\t根本的な
+1084\trough\t粗い
+1085\tsmooth\t滑らかな
+1086\tfluent\t流ちょうな
+1087\tcasual\t形式ばらない
+1088\tinstant\t即時の
+1089\tincredible\t信じられない
+1090\tgenuine\t本物の
+1091\tprecious\t貴重な
+1092\tprominent\t重要な
+1093\tblind\t目の見えない
+1094\tdeaf\t耳が聞こえない
+1095\tharsh\t厳しい
+1096\tprompt\t迅速な
+1097\tinevitable\t避けられない
+1098\tmarine\t海の
+1099\ttropical\t熱帯（地方）の
+1100\tArctic\t北極の
+1101\tforecast\t予報
+1102\tspeculate\t思索する
+1103\tbet\tきっと～だと思う
+1104\tquote\t引用する
+1105\tconsult\t意見を求める
+1106\tdispute\tに異議を唱える
+1107\taccumulate\t集める、蓄積する
+1108\tgrasp\tぎゅっとつかむ、理解する
+1109\tgrip\tをしっかり握る
+1110\tseize\tつかむ
+1111\tcomprehend\t理解する
+1112\tconstitute\t構成する
+1113\treinforce\t強化する
+1114\tresort\t訴える
+1115\tdonate\t寄付する
+1116\tobey\t従う
+1117\tdedicate\tささげる
+1118\ttransmit\t伝える
+1119\tequip\t装備する
+1120\tbind\t縛る
+1121\tpose\t投げかける
+1122\tpause\t休止する
+1123\thesitate\tためらう、躊躇する
+1124\tsplit\t分割する
+1125\tbend\t曲げる
+1126\ttap\t軽くたたく
+1127\tboil\t沸かす
+1128\tbow\tおじぎする
+1129\tconceal\t隠す
+1130\tdispose\tを処分する
+1131\tcheat\tだます
+1132\tdistract\t（注意など）をそらす
+1133\texclude\t締め出す
+1134\tastonish\t驚かせる
+1135\tthrill\tわくわくさせる
+1136\tleap\t跳ぶ
+1137\tpostpone\t延期する
+1138\tdismiss\t解雇する
+1139\tresign\t辞める
+1140\twithdraw\t退く
+1141\tfade\t消えていく
+1142\tvanish\t消え失せる
+1143\tcontinent\t大陸
+1144\tgeography\t地理、地理学
+1145\tecology\t生態系
+1146\tinhabitant\t住民
+1147\tsuburb\t郊外
+1148\tfurniture\t家具
+1149\trefrigerator\t冷蔵庫
+1150\tgarbage\t(生）ごみ
+1151\ttrash\tごみ
+1152\tlitter\t(公共の場での)ごみ
+1153\ttrace\t名残；（通った）跡
+1154\trow\t列
+1155\tcore\t核心、中心
+1156\torbit\t軌道
+1157\tgalaxy\t銀河
+1158\tmyth\t神話
+1159\tfaith\t信頼
+1160\twisdom\t知恵
+1161\tobligation\t義務
+1162\tprivilege\t特典、特権
+1163\tdiscrimination\t差別
+1164\tambition\t願望
+1165\tillusion\t錯覚
+1166\tinstinct\t本能
+1167\tshame\t残念なこと
+1168\thumor\tユーモア
+1169\tcourage\t勇気
+1170\tsympathy\t同情、共感
+1171\ttragedy\t悲惨な出来事
+1172\tfate\t運命
+1173\tdestiny\t運命
+1174\tabuse\t乱用する
+1175\twound\t傷
+1176\tfever\t熱
+1177\tinfection\t伝染病
+1178\tbrave\t勇敢な
+1179\tbrilliant\tすばらしい
+1180\tgentle\t優しい
+1181\tnoble\t高貴な
+1182\troyal\t王室の
+1183\tsacred\t神聖な
+1184\tholy\t神聖な
+1185\tdecent\tきちんとした
+1186\tgrateful\t感謝している
+1187\tfond\t好む
+1188\tselfish\t自分勝手な
+1189\tawkward\t厄介な，ぎこちない
+1190\tawful\tひどい
+1191\tultimate\t最終的な
+1192\tdynamic\t活動的な
+1193\ttremendous\tとてつもない
+1194\tabundant\t豊富な
+1195\tdull\t退屈な
+1196\turgent\t緊急の
+1197\tspare\t余分の
+1198\ttight\tきつい
+1199\tshallow\t浅い
+1200\tsuperficial\t浅はかな
+1201\twhisper\tささやく
+1202\tyell\t叫ぶ
+1203\tscream\t叫び声をあげる
+1204\tnod\tうなずく
+1205\tswallow\t飲み込む
+1206\tyawn\tあくびをする
+1207\tcough\t咳をする
+1208\thug\t抱きしめる
+1209\tsweep\t掃く
+1210\tpolish\t磨く
+1211\tdecorate\t装飾する
+1212\tshed\t（涙）を流す
+1213\tdrag\t引きずる
+1214\tspoil\t台無しにする
+1215\tburst\t破裂する
+1216\texplode\t爆発する
+1217\tcompromise\t妥協する
+1218\texaggerate\t誇張する
+1219\texploit\t搾取する
+1220\tutilize\t利用する
+1221\tirritate\tいらいらさせる
+1222\tinsult\t侮辱する
+1223\tdeceive\tだます
+1224\tviolate\t違反する
+1225\tdisgust\t嫌悪感を持たせる
+1226\tendure\t我慢する
+1227\ttolerate\t耐える
+1228\tsuspend\t一時停止する
+1229\tcease\tやめる
+1230\tappoint\t任命する
+1231\tundertake\t引き受ける
+1232\tovertake\t追いつく
+1233\tproceed\t移る
+1234\tcommute\t通勤[通学]する
+1235\tflourish\t繁盛する；繁殖する
+1236\tthrive\t栄える
+1237\tventure\t思い切って行く
+1238\taccustom\t慣れさせる
+1239\trear\t育てる
+1240\tinherit\t相続する
+1241\tblossom\t開花する
+1242\testeem\t尊敬する
+1243\tmerchant\t商人
+1244\tfare\t運賃
+1245\tvoyage\t航海
+1246\tcrew\t乗組員
+1247\tluggage\t手荷物
+1248\thorizon\t水平線、地平線
+1249\tlightning\t稲妻
+1250\tdawn\t夜明け
+1251\tastronomy\t【名】天文学
+1252\tstatistics\t統計
+1253\tdimension\t局面
+1254\tfaculty\t才能
+1255\tscheme\t計画
+1256\tviewpoint\t見地
+1257\toutput\t生産高
+1258\toutlook\t見通し
+1259\ttuition\t授業料
+1260\tproverb\tことわざ
+1261\tbiography\t伝記
+1262\tnarrative\t話
+1263\tchapter\t章
+1264\tstring\tひも、糸
+1265\ttag\t札
+1266\tpeasant\t小作農
+1267\tlivestock\t家畜
+1268\tfamine\t飢饉
+1269\tfatigue\t疲労
+1270\tmotive\t動機
+1271\tsweat\t汗
+1272\tpeer\t同僚
+1273\tglance\tちらりと見る
+1274\tglimpse\tちらりと見えること
+1275\tluxury\tぜいたく（品）
+1276\tprosperity\t繁栄
+1277\tfame\t名声
+1278\tkeen\t熱中して
+1279\tinclined\t（…し）たいと思う(to do)
+1280\tcompetent\t有能な
+1281\tsuperior\t優れている
+1282\tinferior\t劣った
+1283\tcruel\t残酷な
+1284\tindifferent\t無関心な
+1285\tashamed\t恥じて
+1286\tbold\t大胆な
+1287\tridiculous\tばかげた
+1288\tugly\t醜い
+1289\tpale\t青白い
+1290\tmale\t男の
+1291\tmanual\t手による
+1292\tmutual\t相互の
+1293\tdelicate\t取り扱いの難しい
+1294\tdeliberate\t故意の
+1295\tgradual\t徐々の
+1296\tloose\t緩い
+1297\tbitter\t苦い、つらい
+1298\tmild\t温暖な
+1299\tdense\t密集した
+1300\ttense\t張り詰めた
+1301\tconceive\tを抱く、思いつく
+1302\tconfess\tを告白する
+1303\tconform\t従う
+1304\toffend\tを怒らせる
+1305\tenvy\tをうらやむ
+1306\tboast\t自慢する
+1307\tdare\tあえてする、する勇気がある
+1308\tconfine\tを限定する
+1309\tcontradict\tと矛盾する
+1310\tcompensate\tに補償する
+1311\tcoincide\t同時に起こる
+1312\tassure\tに安心させる
+1313\tattain\tを達成する
+1314\tinquire\tを尋ねる
+1315\tinvade\tを侵略する、に侵攻する
+1316\tconquer\tを征服する
+1317\tpersist\t固執する、しつこく続ける
+1318\tlast\t続く
+1319\tsurrender\tを引き渡す
+1320\tbetray\tを裏切る、を漏らす
+1321\tstrain\tをぴんと張る、を痛める
+1322\trefrain\t控える
+1323\tscatter\tをまき散らす
+1324\tspill\tをこぼす
+1325\tprevail\t普及する、勝る
+1326\tstarve\t飢えに苦しむ、渇望する
+1327\tdigest\tを消化する
+1328\tdisguise\tを変装させる
+1329\tstrip\tから?奪する、取り去る
+1330\tscratch\tをかく
+1331\tbathe\tを入浴させる
+1332\tsoak\tを浸す
+1333\tstir\tをかき回す、呼び起こす
+1334\twind\t曲がりくねる
+1335\theal\tを治す、癒す
+1336\tknit\tを編む
+1337\tsew\tを縫いつける
+1338\tdye\tを染める
+1339\tbeg\tを懇願する、請う
+1340\tpray\t祈る
+1341\tcongratulate\tに祝いの言葉を述べる
+1342\tsummit\t頂上
+1343\tmayor\t市長
+1344\tsecretary\t秘書
+1345\tcouncil\t議会
+1346\tpanel\t委員会
+1347\tjury\t陪審
+1348\tquarrel\t口論
+1349\tdivorce\t離婚
+1350\tthief\t泥棒
+1351\trefuge\t避難
+1352\tmercy\t情け、慈悲
+1353\tcaution\t用心、注意
+1354\tpity\t残念なこと
+1355\tsorrow\t悲しみ
+1356\tgrief\t深い悲しみ
+1357\tdespair\t絶望
+1358\tsuicide\t自殺
+1359\tambulance\t救急車
+1360\tfuneral\t葬式
+1361\tgrave\t墓
+1362\tvirtue\t美徳
+1363\tlegend\t伝説
+1364\tprestige\t威信、名声
+1365\tglory\t栄光
+1366\tdignity\t尊厳
+1367\tworship\t崇拝
+1368\tcriterion\t基準
+1369\tconsent\t承諾、同意
+1370\ttriumph\t勝利
+1371\tcirculation\t血行、発行部数
+1372\tmerit\t優秀さ、長所
+1373\tappetite\t食欲、欲求
+1374\tnutrition\t栄養摂取
+1375\tdecay\t虫歯、衰退、荒廃
+1376\tatom\t原子
+1377\tboom\t好況、ブーム
+1378\tvalid\t正当な証拠のある、有効な
+1379\tdue\t予定で、締め切りの
+1380\tvacant\t空いている
+1381\tbare\t裸の
+1382\tnaked\t裸の
+1383\tobscure\tわかりにくい
+1384\tpeculiar\t特有の
+1385\ttidy\t整然とした、きれいにしてある
+1386\tminute\t微小な
+1387\tvague\t漠然とした
+1388\tsteep\t急な
+1389\thumid\t湿気のある
+1390\tearnest\t真剣な、本気の
+1391\tabsurd\tばかげた
+1392\thostile\t反感を持った、敵意のある
+1393\tidle\t使われていない、仕事がない
+1394\tjealous\t嫉妬深い
+1395\tloyal\t忠実な
+1396\tsupreme\t最高の、最大の
+1397\tinfinite\t無限の
+1398\tstatic\t変化のない
+1399\tthorough\t徹底的な
+1400\timmense\t計り知れない`;
+
+    const EXAMPLE_BANK = {
+      believe:["Many people believe that regular practice leads to success.","多くの人は、継続した練習が成功につながると信じている。"],
+      consider:["We should consider the effect of our choices on others.","私たちは自分の選択が他人に与える影響を考えるべきだ。"],
+      expect:["The teacher expects us to finish the task by Friday.","先生は私たちが金曜日までにその課題を終えることを期待している。"],
+      decide:["She decided to join the English speech contest.","彼女は英語のスピーチコンテストに参加することを決めた。"],
+      allow:["Our school allows students to use tablets in class.","私たちの学校では、生徒が授業でタブレットを使うことが認められている。"],
+      remember:["I still remember the advice my coach gave me.","私は今でもコーチがくれた助言を覚えている。"],
+      suggest:["She suggested taking a short break before we continued.","彼女は続ける前に少し休憩しようと提案した。"],
+      explain:["Can you explain this rule in simpler words?", "このルールをもっとやさしい言葉で説明してくれますか。"],
+      improve:["Reading every day can improve both speed and understanding.","毎日読むことは、読む速さと理解力の両方を高めることができる。"],
+      provide:["The city provides free Wi-Fi in public spaces.","その市は公共の場所で無料のWi‑Fiを提供している。"],
+      compare:["Compare your answer with your partner’s answer.","自分の答えをペアの答えと比べなさい。"],
+      achieve:["She achieved her goal after years of hard work.","彼女は長年の努力の末に目標を達成した。"],
+      prevent:["Regular exercise can prevent some diseases.","定期的な運動はいくつかの病気を防ぐことができる。"],
+      language:["Language is a useful tool for connecting people.","言語は人と人をつなぐ有用な手段だ。"],
+      research:["The students did research on renewable energy.","生徒たちは再生可能エネルギーについて調査した。"],
+      opportunity:["The program gives students an opportunity to study abroad.","そのプログラムは生徒に留学の機会を与える。"],
+      practice:["Speaking practice is important for building confidence.","自信をつけるにはスピーキング練習が大切だ。"],
+      protect:["We must protect children from online danger.","子どもたちをネット上の危険から守らなければならない。"],
+      adapt:["Children usually adapt quickly to a new school.","子どもはたいてい新しい学校にすぐ順応する。"],
+      observe:["The students observed the moon through a telescope.","生徒たちは望遠鏡で月を観察した。"],
+      survive:["Some animals cannot survive in polluted water.","汚れた水の中では生き残れない動物もいる。"],
+      atmosphere:["The café has a warm and friendly atmosphere.","そのカフェには温かく親しみやすい雰囲気がある。"],
+      confidence:["Practice gave her more confidence.","練習によって彼女はより自信を持てるようになった。"],
+      enthusiasm:["He spoke with great enthusiasm.","彼は大きな熱意をもって話した。"],
+      courage:["It took courage to speak the truth.","真実を話すには勇気が必要だった。"]
+    };
+
+    const RANGE_OPTIONS = Array.from({length: 14}, (_, i) => ({
+      label: `${i*100+1}–${i*100+100}`,
+      start: i*100+1,
+      end: i*100+100,
+    }));
+
+    const state = {
+      screen: 'home',
+      selectedRanges: [RANGE_OPTIONS[0]],
+      questionCount: 10,
+      questions: [],
+      currentIndex: 0,
+      timeLeft: 10,
+      selectedLabel: null,
+      reveal: false,
+      score: 0,
+      results: [],
+      timerId: null,
+    };
+
+    const vocab = RAW_DATA.split('\n').map(line => {
+      const [no, word, meaning] = line.split('\t');
+      return { no: Number(no), word, meaning, pos: detectPos(meaning) };
+    }).filter(v => v.word && v.meaning);
+
+    function detectPos(meaning) {
+      if (meaning.startsWith('を') || meaning.startsWith('に') || meaning.startsWith('と') || meaning.startsWith('が') || meaning.includes('する') || meaning.includes('なる') || meaning.includes('ある') || meaning.includes('いる')) return 'verb';
+      if (meaning.endsWith('の') || meaning.endsWith('な') || meaning.includes('的な') || meaning.includes('可能な') || meaning.includes('安全な')) return 'adjective';
+      if (meaning.includes('に') && !meaning.startsWith('に')) return 'adverb';
+      return 'noun';
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function sample(arr, n) { return shuffle(arr).slice(0, n); }
+
+    function inferVerbType(meaning) {
+      return (meaning.startsWith('を') || meaning.startsWith('に') || meaning.includes('を')) ? 'transitive' : 'intransitive';
+    }
+
+    function genericExample(entry) {
+      if (entry.pos === 'verb') {
+        if (inferVerbType(entry.meaning) === 'transitive') {
+          return [`Our teacher asked us to ${entry.word} the main idea in one sentence.`, `先生は私たちに主な考えを1文で表すよう求めた。`];
+        }
+        return [`Students often ${entry.word} when they work in groups.`, `生徒はグループで活動するときによくそのように行動する。`];
+      }
+      if (entry.pos === 'adjective') {
+        return [`This method is simple but very ${entry.word}.`, `この方法は簡単だが、その語の意味に合う特徴をもっている。`];
+      }
+      if (entry.pos === 'adverb') {
+        return [`She answered the question ${entry.word}.`, `彼女はその質問にそのように答えた。`];
+      }
+      return [`The lesson gave us a better understanding of ${entry.word}.`, `その授業で私たちは ${entry.word} への理解を深めた。`];
+    }
+
+    function makeExample(entry) {
+      return EXAMPLE_BANK[entry.word] || genericExample(entry);
+    }
+
+    function toggleRange(range) {
+      const exists = state.selectedRanges.some(r => r.start === range.start && r.end === range.end);
+      if (exists) {
+        state.selectedRanges = state.selectedRanges.filter(r => !(r.start === range.start && r.end === range.end));
+      } else {
+        state.selectedRanges = [...state.selectedRanges, range].sort((a, b) => a.start - b.start);
+      }
+      render();
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = /^[A-Za-z0-9 .,'"!?;:()\-]+$/.test(text) ? 'en-US' : 'ja-JP';
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    }
+
+    function buildQuestions() {
+      const activeRanges = state.selectedRanges.length ? state.selectedRanges : [RANGE_OPTIONS[0]];
+      const pool = vocab.filter(v => activeRanges.some(r => v.no >= r.start && v.no <= r.end));
+      const picked = sample(pool, Math.min(state.questionCount, pool.length));
+      return picked.map((entry, idx) => {
+        const samePos = pool.filter(v => v.word !== entry.word && v.meaning !== entry.meaning && v.pos === entry.pos);
+        const fallback = pool.filter(v => v.word !== entry.word && v.meaning !== entry.meaning);
+        const distractorPool = samePos.length >= 4 ? samePos : fallback;
+        const distractors = sample(distractorPool.map(v => v.meaning), 8);
+        const useNone = Math.random() < 0.25;
+        const fakeCorrect = useNone ? sample(distractors, 1)[0] : entry.meaning;
+        const optionsCore = shuffle([fakeCorrect, ...sample(distractors.filter(x => x !== fakeCorrect), 3)]).map(label => ({
+          label,
+          isCorrect: !useNone && label === entry.meaning,
+        }));
+        const options = [...optionsCore, { label: 'この中に正解はない', isCorrect: useNone, isNone: true }];
+        const [example, translation] = makeExample(entry);
+        return { ...entry, id: `${entry.word}-${idx}`, useNone, options, example, translation };
+      });
+    }
+
+    function resetQuiz() {
+      clearInterval(state.timerId);
+      state.questions = buildQuestions();
+      state.currentIndex = 0;
+      state.timeLeft = 10;
+      state.selectedLabel = null;
+      state.reveal = false;
+      state.score = 0;
+      state.results = [];
+      state.screen = 'quiz';
+      render();
+      startTimer();
+      autoSpeakCurrentWord();
+    }
+
+    function startTimer() {
+      clearInterval(state.timerId);
+      state.timeLeft = 10;
+      state.timerId = setInterval(() => {
+        state.timeLeft -= 1;
+        if (state.timeLeft <= 0) {
+          state.timeLeft = 0;
+          clearInterval(state.timerId);
+          revealAnswer(null, true);
+        }
+        render();
+      }, 1000);
+    }
+
+    function currentQuestion() {
+      return state.questions[state.currentIndex];
+    }
+
+    function autoSpeakCurrentWord() {
+      const q = currentQuestion();
+      if (!q) return;
+      setTimeout(() => speak(q.word), 250);
+    }
+
+    function revealAnswer(label, timedOut = false) {
+      if (state.reveal) return;
+      clearInterval(state.timerId);
+      const q = currentQuestion();
+      state.selectedLabel = label;
+      state.reveal = true;
+      const selected = q.options.find(o => o.label === label);
+      const correct = timedOut ? false : !!selected?.isCorrect;
+      if (correct) state.score += 1;
+      state.results.push({
+        word: q.word,
+        meaning: q.meaning,
+        example: q.example,
+        translation: q.translation,
+        correct,
+        selected: timedOut ? '時間切れ' : label,
+        correctText: q.useNone ? 'この中に正解はない' : q.meaning,
+      });
+      render();
+    }
+
+    function nextQuestion() {
+      if (state.currentIndex >= state.questions.length - 1) {
+        state.screen = 'summary';
+        clearInterval(state.timerId);
+        render();
+        return;
+      }
+      state.currentIndex += 1;
+      state.timeLeft = 10;
+      state.selectedLabel = null;
+      state.reveal = false;
+      render();
+      startTimer();
+      autoSpeakCurrentWord();
+    }
+
+    function goHome() {
+      clearInterval(state.timerId);
+      state.screen = 'home';
+      render();
+    }
+
+    function homeHTML() {
+      return `
+        <div class="card">
+          <div class="section">
+            <h1>Vocab Test App</h1>
+            <p class="sub">出題範囲は複数選択できます。問題数を選んでからスタートしてください。</p>
+          </div>
+          <div class="section" style="padding-top:0; display:grid; gap:16px;">
+            <div>
+              <h3>出題範囲</h3>
+              <div class="grid-2">
+                ${RANGE_OPTIONS.map(r => {
+                  const active = state.selectedRanges.some(x => x.start === r.start && x.end === r.end);
+                  return `<button class="range-btn ${active ? 'active' : ''}" onclick='toggleRange(${JSON.stringify(r)})'>
+                    <div style="font-weight:800;">${r.label}</div>
+                    <span class="small">No.${r.start}〜${r.end}</span>
+                  </button>`;
+                }).join('')}
+              </div>
+            </div>
+            <div>
+              <h3>出題数</h3>
+              <div class="grid-3">
+                ${[5,10,20].map(n => `<button class="count-btn ${state.questionCount === n ? 'active' : ''}" onclick="setQuestionCount(${n})">${n}問</button>`).join('')}
+              </div>
+            </div>
+            <div class="summary-box">
+              <div><strong>選択中：</strong>${state.selectedRanges.length ? state.selectedRanges.map(r => r.label).join(', ') : 'なし'}</div>
+              <div><strong>問題数：</strong>${state.questionCount}問</div>
+            </div>
+            <button class="primary-btn" ${state.selectedRanges.length ? '' : 'disabled'} onclick="resetQuiz()">スタート</button>
+          </div>
+        </div>`;
+    }
+
+    function quizHTML() {
+      const q = currentQuestion();
+      if (!q) return '';
+      const progress = Math.max(0, (state.timeLeft / 10) * 100);
+      const correctOption = q.options.find(o => o.isCorrect);
+      return `
+        <div class="card">
+          <div class="progress-wrap">
+            <div class="row" style="font-size:14px;color:var(--muted);">
+              <span>${state.selectedRanges.map(r => r.label).join(', ')}</span>
+              <span>第 ${state.currentIndex + 1} 問 / ${state.questions.length}</span>
+            </div>
+            <div class="row" style="margin-top:6px;font-size:14px;color:var(--muted);">
+              <span>正解 ${state.score}</span>
+              <span>残り ${state.timeLeft} 秒</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+          </div>
+          <div class="section" style="display:grid; gap:14px;">
+            <div class="word-box">
+              <div class="row">
+                <div>
+                  <div class="tiny">英語の意味を選ぶ</div>
+                  <div class="word">${q.word}</div>
+                </div>
+                <button class="icon-btn" onclick="speak(${JSON.stringify(q.word)})">🔊</button>
+              </div>
+            </div>
+            <div class="opts">
+              ${q.options.slice(0,4).map(opt => {
+                let cls = '';
+                if (state.reveal) {
+                  if (opt.isCorrect) cls = 'correct';
+                  else if (state.selectedLabel === opt.label) cls = 'wrong';
+                }
+                return `<button class="opt-btn ${cls}" ${state.reveal ? 'disabled' : ''} onclick="revealAnswer(${JSON.stringify(opt.label)})">${opt.label}</button>`;
+              }).join('')}
+              ${(() => {
+                const opt = q.options[4];
+                let cls = 'none';
+                if (state.reveal) {
+                  if (opt.isCorrect) cls += ' correct';
+                  else if (state.selectedLabel === opt.label) cls += ' wrong';
+                }
+                return `<button class="opt-btn ${cls}" ${state.reveal ? 'disabled' : ''} onclick="revealAnswer(${JSON.stringify(opt.label)})">この中に正解はない</button>`;
+              })()}
+            </div>
+            ${state.reveal ? `
+              <div class="result-card">
+                <div class="badge ${state.selectedLabel && correctOption && state.selectedLabel === correctOption.label ? 'ok' : 'ng'}">
+                  ${state.selectedLabel && correctOption && state.selectedLabel === correctOption.label ? '✅ 正解' : '❌ 不正解'}
+                </div>
+                <div class="result-body">
+                  <div><strong>語義：</strong>${q.meaning}</div>
+                  <div><strong>正解：</strong>${q.useNone ? 'この中に正解はない' : q.meaning}</div>
+                  <div class="example-row">
+                    <div class="example-text"><strong>例文：</strong>${q.example}</div>
+                    <button class="icon-btn" onclick="speak(${JSON.stringify(q.example)})">🔊</button>
+                  </div>
+                  <div><strong>訳：</strong>${q.translation}</div>
+                </div>
+                <div class="mt-12"><button class="primary-btn" onclick="nextQuestion()">${state.currentIndex === state.questions.length - 1 ? '結果を見る' : '次の問題へ'}</button></div>
+              </div>
+            ` : ''}
+          </div>
+        </div>`;
+    }
+
+    function summaryHTML() {
+      return `
+        <div class="card">
+          <div class="section" style="text-align:center; display:grid; gap:14px;">
+            <h2>結果</h2>
+            <div class="sub">範囲: ${state.selectedRanges.map(r => r.label).join(', ')}</div>
+            <div class="score-big">${state.score}<span style="font-size:22px; font-weight:700;"> / ${state.questions.length}</span></div>
+            <div class="split">
+              <div class="tile ok">正解<br><span style="font-size:24px;font-weight:800;">${state.score}</span></div>
+              <div class="tile ng">不正解<br><span style="font-size:24px;font-weight:800;">${state.questions.length - state.score}</span></div>
+            </div>
+            <div class="split">
+              <button class="ghost-btn" onclick="goHome()">ホーム</button>
+              <button class="primary-btn" onclick="resetQuiz()">再挑戦</button>
+            </div>
+          </div>
+        </div>
+        ${state.results.map((r, i) => `
+          <div class="history-card">
+            <div class="history-head">
+              <div style="font-size:20px;font-weight:800;">${i + 1}. ${r.word}</div>
+              <span class="status-pill ${r.correct ? 'ok' : 'ng'}">${r.correct ? '正解' : '不正解'}</span>
+            </div>
+            <div style="display:grid; gap:8px; font-size:14px; line-height:1.7;">
+              <div><strong>意味：</strong>${r.meaning}</div>
+              <div class="example-row">
+                <div class="example-text"><strong>例文：</strong>${r.example}</div>
+                <button class="icon-btn" onclick="speak(${JSON.stringify(r.example)})">🔊</button>
+              </div>
+              <div><strong>訳：</strong>${r.translation}</div>
+            </div>
+          </div>`).join('')}
+      `;
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      if (state.screen === 'home') app.innerHTML = homeHTML();
+      else if (state.screen === 'quiz') app.innerHTML = quizHTML();
+      else app.innerHTML = summaryHTML();
+    }
+
+    function setQuestionCount(n) { state.questionCount = n; render(); }
+
+    window.toggleRange = toggleRange;
+    window.setQuestionCount = setQuestionCount;
+    window.resetQuiz = resetQuiz;
+    window.revealAnswer = revealAnswer;
+    window.nextQuestion = nextQuestion;
+    window.goHome = goHome;
+    window.speak = speak;
+
+    render();
+  </script>
+</body>
+</html>
