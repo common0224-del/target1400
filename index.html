@@ -20,63 +20,257 @@
       --soft: #f9fafb;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); }
-    .app { width: 100%; max-width: 430px; margin: 0 auto; min-height: 100vh; padding: 12px; }
-    .card { background: var(--card); border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.08); overflow: hidden; border: 1px solid rgba(0,0,0,.04); }
-    .section { padding: 16px; }
-    h1,h2,h3,p{margin:0}
-    h1{font-size:28px;font-weight:800}
-    h2{font-size:20px;font-weight:800}
-    h3{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:8px}
-    .sub{color:var(--muted);line-height:1.6;margin-top:8px;font-size:14px}
-    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-    .range-btn,.count-btn,.opt-btn,.ghost-btn,.primary-btn,.icon-btn{
-      appearance:none;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:18px;cursor:pointer
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
-    .range-btn,.count-btn{padding:12px;text-align:left}
-    .range-btn.active,.count-btn.active{background:var(--primary);color:var(--primaryText);border-color:var(--primary)}
-    .range-btn .small{font-size:12px;color:inherit;opacity:.75;margin-top:4px;display:block}
-    .count-btn{text-align:center;font-weight:700}
-    .summary-box{background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:12px;font-size:14px;line-height:1.7}
-    .primary-btn{width:100%;background:var(--primary);color:var(--primaryText);border-color:var(--primary);padding:14px;font-size:16px;font-weight:800}
-    .primary-btn:disabled{opacity:.45;cursor:not-allowed}
-    .ghost-btn{width:100%;padding:12px;font-size:15px;font-weight:700;background:#fff}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .progress-wrap{padding:14px 16px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
-    .progress-bar{width:100%;height:8px;background:#eceef2;border-radius:999px;overflow:hidden;margin-top:8px}
-    .progress-fill{height:100%;width:100%;background:#111827;transition:width 1s linear}
-    .word-box{background:var(--soft);border:1px solid var(--line);border-radius:24px;padding:16px}
-    .word{font-size:34px;font-weight:800;letter-spacing:.2px;word-break:break-word}
-    .tiny{color:var(--muted);font-size:12px;margin-bottom:6px}
-    .icon-btn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
-    .opts{display:grid;gap:8px}
-    .opt-btn{width:100%;text-align:left;padding:14px;font-size:14px;line-height:1.6}
-    .opt-btn.none{background:var(--soft)}
-    .opt-btn.correct{background:var(--okBg);border-color:var(--okLine)}
-    .opt-btn.wrong{background:var(--ngBg);border-color:var(--ngLine)}
-    .result-card{margin-top:8px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:14px}
-    .badge{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:15px;margin-bottom:10px}
-    .ok{color:#047857}.ng{color:#b91c1c}
-    .result-body{display:grid;gap:8px;font-size:14px;line-height:1.7}
-    .example-row{display:flex;align-items:flex-start;gap:8px}
-    .example-text{flex:1}
-    .score-big{font-size:52px;font-weight:800;text-align:center}
-    .split{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-    .tile{border-radius:18px;padding:12px;text-align:center;font-size:14px}
-    .tile.ok{background:var(--okBg);color:#065f46}
-    .tile.ng{background:var(--ngBg);color:#991b1b}
-    .history-card{background:#fff;border-radius:22px;border:1px solid var(--line);padding:14px;margin-top:10px}
-    .history-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-    .status-pill{font-size:12px;padding:4px 8px;border-radius:999px;font-weight:700}
-    .status-pill.ok{background:var(--okBg);color:#065f46}
-    .status-pill.ng{background:var(--ngBg);color:#991b1b}
-    .mt-12{margin-top:12px}
+    .app {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 12px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.04);
+    }
+    .section { padding: 16px; }
+    h1,h2,h3,p { margin: 0; }
+    h1 { font-size: 28px; font-weight: 800; }
+    h2 { font-size: 20px; font-weight: 800; }
+    h3 { font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+    .sub { color: var(--muted); line-height: 1.6; margin-top: 8px; font-size: 14px; }
+    .warn { color: #b91c1c; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+
+    .range-btn,.count-btn,.opt-btn,.ghost-btn,.primary-btn,.icon-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 18px;
+      cursor: pointer;
+    }
+
+    .range-btn,.count-btn { padding: 12px; text-align: left; }
+    .range-btn.active,.count-btn.active {
+      background: var(--primary);
+      color: var(--primaryText);
+      border-color: var(--primary);
+    }
+
+    .range-btn .small {
+      font-size: 12px;
+      color: inherit;
+      opacity: .75;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .count-btn { text-align: center; font-weight: 700; }
+
+    .summary-box {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .primary-btn {
+      width: 100%;
+      background: var(--primary);
+      color: var(--primaryText);
+      border-color: var(--primary);
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .primary-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .ghost-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      background: #fff;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .progress-wrap {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 2;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #eceef2;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 100%;
+      background: #111827;
+      transition: width 1s linear;
+    }
+
+    .word-box {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 16px;
+    }
+
+    .word {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      word-break: break-word;
+    }
+
+    .tiny {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .opts { display: grid; gap: 8px; }
+
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .opt-btn.none { background: var(--soft); }
+    .opt-btn.correct { background: var(--okBg); border-color: var(--okLine); }
+    .opt-btn.wrong { background: var(--ngBg); border-color: var(--ngLine); }
+
+    .result-card {
+      margin-top: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .ok { color: #047857; }
+    .ng { color: #b91c1c; }
+
+    .result-body {
+      display: grid;
+      gap: 8px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .example-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .example-text { flex: 1; }
+
+    .score-big {
+      font-size: 52px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 8px;
+    }
+
+    .tile {
+      border-radius: 18px;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .tile.ok { background: var(--okBg); color: #065f46; }
+    .tile.ng { background: var(--ngBg); color: #991b1b; }
+
+    .history-card {
+      background: #fff;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .history-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .status-pill {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .status-pill.ok { background: var(--okBg); color: #065f46; }
+    .status-pill.ng { background: var(--ngBg); color: #991b1b; }
+
+    .mt-12 { margin-top: 12px; }
   </style>
 </head>
 <body>
   <div class="app" id="app"></div>
 
+  <script src="examples-data.js"></script>
   <script>
     const RAW_DATA = `1	believe	を信じる
 2	consider	を見なす
@@ -1479,160 +1673,99 @@
 1399	thorough	徹底的な
 1400	immense	計り知れない`;
 
-    const EXAMPLE_BANK = {
-      believe:["Many people believe that regular practice leads to success.","多くの人は、継続した練習が成功につながると信じている。"],
-      consider:["We should consider the effect of our choices on others.","私たちは自分の選択が他人に与える影響を考えるべきだ。"],
-      expect:["The teacher expects us to finish the task by Friday.","先生は私たちが金曜日までにその課題を終えることを期待している。"],
-      decide:["She decided to join the English speech contest.","彼女は英語のスピーチコンテストに参加することを決めた。"],
-      allow:["Our school allows students to use tablets in class.","私たちの学校では、生徒が授業でタブレットを使うことが認められている。"],
-      remember:["I still remember the advice my coach gave me.","私は今でもコーチがくれた助言を覚えている。"],
-      suggest:["She suggested taking a short break before we continued.","彼女は続ける前に少し休憩しようと提案した。"],
-      explain:["Can you explain this rule in simpler words?","このルールをもっとやさしい言葉で説明してくれますか。"],
-      improve:["Reading every day can improve both speed and understanding.","毎日読むことは、読む速さと理解力の両方を高めることができる。"],
-      provide:["The city provides free Wi-Fi in public spaces.","その市は公共の場所で無料のWi-Fiを提供している。"],
-      compare:["Compare your answer with your partner’s answer.","自分の答えをペアの答えと比べなさい。"],
-      achieve:["She achieved her goal after years of hard work.","彼女は長年の努力の末に目標を達成した。"],
-      prevent:["Regular exercise can prevent some diseases.","定期的な運動はいくつかの病気を防ぐことができる。"],
-      language:["Language is a useful tool for connecting people.","言語は人と人をつなぐ有用な手段だ。"],
-      research:["The students did research on renewable energy.","生徒たちは再生可能エネルギーについて調査した。"],
-      opportunity:["The program gives students an opportunity to study abroad.","そのプログラムは生徒に留学の機会を与える。"],
-      practice:["Speaking practice is important for building confidence.","自信をつけるにはスピーキング練習が大切だ。"],
-      protect:["We must protect children from online danger.","子どもたちをネット上の危険から守らなければならない。"],
-      adapt:["Children usually adapt quickly to a new school.","子どもはたいてい新しい学校にすぐ順応する。"],
-      observe:["The students observed the moon through a telescope.","生徒たちは望遠鏡で月を観察した。"],
-      survive:["Some animals cannot survive in polluted water.","汚れた水の中では生き残れない動物もいる。"],
-      atmosphere:["The café has a warm and friendly atmosphere.","そのカフェには温かく親しみやすい雰囲気がある。"],
-      confidence:["Practice gave her more confidence.","練習によって彼女はより自信を持てるようになった。"],
-      enthusiasm:["He spoke with great enthusiasm.","彼は大きな熱意をもって話した。"],
-      courage:["It took courage to speak the truth.","真実を話すには勇気が必要だった。"]
-    };
-
     const RANGE_OPTIONS = Array.from({length: 14}, (_, i) => ({
-      label: `${i*100+1}–${i*100+100}`,
-      start: i*100+1,
-      end: i*100+100,
+      label: `${i * 100 + 1}–${i * 100 + 100}`,
+      start: i * 100 + 1,
+      end: i * 100 + 100,
     }));
 
+    const EXAMPLE_BANK = window.EXAMPLE_BANK || {};
+
     const state = {
-      screen:'home',
-      selectedRanges:[RANGE_OPTIONS[0]],
-      questionCount:10,
-      questions:[],
-      currentIndex:0,
-      timeLeft:10,
-      selectedLabel:null,
-      reveal:false,
-      score:0,
-      results:[],
-      timerId:null
+      screen: 'home',
+      selectedRanges: [RANGE_OPTIONS[0]],
+      questionCount: 10,
+      questions: [],
+      currentIndex: 0,
+      timeLeft: 10,
+      selectedLabel: null,
+      reveal: false,
+      score: 0,
+      results: [],
+      timerId: null
     };
 
-    const vocab = RAW_DATA.split('\n').map(line => {
-      const [no, word, meaning] = line.split('\t');
-      return { no:Number(no), word, meaning, pos:detectPos(meaning) };
-    }).filter(v => v.word && v.meaning);
+    function detectPos(meaning) {
+      if (
+        meaning.startsWith('を') ||
+        meaning.startsWith('に') ||
+        meaning.startsWith('と') ||
+        meaning.startsWith('が') ||
+        meaning.includes('する') ||
+        meaning.includes('なる') ||
+        meaning.includes('ある') ||
+        meaning.includes('いる')
+      ) return 'verb';
 
-    function detectPos(meaning){
-      if (meaning.startsWith('を') || meaning.startsWith('に') || meaning.startsWith('と') || meaning.startsWith('が') || meaning.includes('する') || meaning.includes('なる') || meaning.includes('ある') || meaning.includes('いる')) return 'verb';
-      if (meaning.endsWith('の') || meaning.endsWith('な') || meaning.includes('的な') || meaning.includes('可能な') || meaning.includes('安全な')) return 'adjective';
+      if (
+        meaning.endsWith('の') ||
+        meaning.endsWith('な') ||
+        meaning.includes('的な') ||
+        meaning.includes('可能な') ||
+        meaning.includes('安全な')
+      ) return 'adjective';
+
       if (meaning.includes('に') && !meaning.startsWith('に')) return 'adverb';
       return 'noun';
     }
 
-    function shuffle(arr){
-      const a=[...arr];
-      for(let i=a.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
+    const vocab = RAW_DATA.split('\n').map(line => {
+      const [no, word, meaning] = line.split('\t');
+      return { no: Number(no), word, meaning, pos: detectPos(meaning) };
+    }).filter(v => v.word && v.meaning);
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
       }
       return a;
     }
 
-    function sample(arr,n){ return shuffle(arr).slice(0,n); }
-
-    function inferVerbType(meaning){
-      return (meaning.startsWith('を') || meaning.startsWith('に') || meaning.includes('を')) ? 'transitive' : 'intransitive';
+    function sample(arr, n) {
+      return shuffle(arr).slice(0, n);
     }
 
     function genericExample(entry) {
-      const m = entry.meaning;
-
-      if (entry.pos === 'verb') {
-        if (/(説明|表現|伝達|言及|翻訳|強調|提案|発表|報告|記述)/.test(m)) {
-          return [`She used a simple example to ${entry.word} her idea clearly.`, `彼女は自分の考えを分かりやすく伝えるために簡単な例を使った。`];
-        }
-        if (/(改善|変|発展|増|減|拡大|維持|防|守)/.test(m)) {
-          return [`The new plan may ${entry.word} the way students learn.`, `その新しい計画は、生徒の学び方をよくする可能性がある。`];
-        }
-        if (/(作|設立|開発|建設|生産|創造)/.test(m)) {
-          return [`They hope to ${entry.word} a better system for the school.`, `彼らは学校のためによりよい仕組みを作りたいと思っている。`];
-        }
-        if (/(探|調査|観察|確認|発見|理解)/.test(m)) {
-          return [`The students tried to ${entry.word} the cause of the problem.`, `生徒たちはその問題の原因を明らかにしようとした。`];
-        }
-        if (/(参加|加わ|出席|従事|協力)/.test(m)) {
-          return [`Many students ${entry.word} in the school event every year.`, `多くの生徒が毎年その学校行事に参加する。`];
-        }
-        if (/(許可|禁止|要求|命|説得|納得|警告)/.test(m)) {
-          return [`The teacher did not ${entry.word} us to leave early.`, `先生は私たちが早く帰ることを認めなかった。`];
-        }
-        if (inferVerbType(m) === 'transitive') {
-          return [`We need to ${entry.word} this issue carefully in class.`, `私たちは授業でこの問題を注意深く扱う必要がある。`];
-        }
-        return [`Things may ${entry.word} quickly when people work together.`, `人々が協力すると、状況はすぐに変わることがある。`];
-      }
-
-      if (entry.pos === 'adjective') {
-        if (/(重要|必要|主要|中心|重大)/.test(m)) {
-          return [`This point is ${entry.word} for understanding the passage.`, `この点は本文を理解するうえで重要だ。`];
-        }
-        if (/(安全|適切|正しい|普通|典型)/.test(m)) {
-          return [`It is ${entry.word} to ask questions when you are unsure.`, `よく分からないときに質問するのは適切だ。`];
-        }
-        if (/(高価|巨大|急速|広大|多数)/.test(m)) {
-          return [`The project had a ${entry.word} effect on the town.`, `その事業は町に大きな影響を与えた。`];
-        }
-        return [`The teacher gave a ${entry.word} explanation that students could follow.`, `先生は生徒が理解しやすい分かりやすい説明をした。`];
-      }
-
-      if (entry.pos === 'adverb') {
-        return [`She answered the question ${entry.word} during the interview.`, `彼女は面接でその質問にそのように答えた。`];
-      }
-
-      if (/(人|者|教授|著者|顧客|住民|候補者|医師|市長|秘書|同僚|国民)/.test(m)) {
-        return [`The article introduced an interesting ${entry.word} from the local community.`, `その記事は地域社会の興味深い人物を紹介していた。`];
-      }
-      if (/(問題|結果|理由|方法|経験|知識|研究|教育|政策|文化|経済|価値|意見|役割|目的|特徴|要因|構造|影響|記憶|感情|分析|展望|洞察)/.test(m)) {
-        return [`The lesson helped us understand the ${entry.word} more deeply.`, `その授業は私たちがその語の内容をより深く理解する助けになった。`];
-      }
-      if (/(場所|地域|環境|自然|地上|社会|国境|町|村|島|都市|海|山|谷|宇宙)/.test(m)) {
-        return [`We learned about this ${entry.word} in class today.`, `私たちは今日の授業でこの語の内容について学んだ。`];
-      }
       return [`We studied the word ${entry.word} in today’s lesson.`, `私たちは今日の授業で ${entry.word} という語を学んだ。`];
     }
 
-    function makeExample(entry){
-      return EXAMPLE_BANK[entry.word] || genericExample(entry);
+    function makeExample(entry) {
+      const custom = EXAMPLE_BANK[entry.word];
+      if (Array.isArray(custom) && custom.length >= 2) return custom;
+      if (typeof custom === 'string') return [custom, ''];
+      return genericExample(entry);
     }
 
-    function toggleRange(range){
+    function toggleRange(range) {
       const exists = state.selectedRanges.some(r => r.start === range.start && r.end === range.end);
       state.selectedRanges = exists
         ? state.selectedRanges.filter(r => !(r.start === range.start && r.end === range.end))
-        : [...state.selectedRanges, range].sort((a,b)=>a.start-b.start);
+        : [...state.selectedRanges, range].sort((a, b) => a.start - b.start);
       render();
     }
 
-    function speak(text){
-      if(!('speechSynthesis' in window)) return;
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const u=new SpeechSynthesisUtterance(text);
-      u.lang=/^[A-Za-z0-9 .,'\"!?;:()\-]+$/.test(text)?'en-US':'ja-JP';
-      u.rate=.95;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = /^[A-Za-z0-9 .,'"!?:;()\-]+$/.test(text) ? 'en-US' : 'ja-JP';
+      u.rate = 0.95;
       window.speechSynthesis.speak(u);
     }
 
-    function buildQuestions(){
+    function buildQuestions() {
       const activeRanges = state.selectedRanges.length ? state.selectedRanges : [RANGE_OPTIONS[0]];
       const pool = vocab.filter(v => activeRanges.some(r => v.no >= r.start && v.no <= r.end));
       const picked = sample(pool, Math.min(state.questionCount, pool.length));
@@ -1650,127 +1783,139 @@
         const useNone = noneIndexes.has(idx);
         const fakeCorrect = useNone ? sample(distractors, 1)[0] : entry.meaning;
 
-        const optionsCore = shuffle([fakeCorrect, ...sample(distractors.filter(x => x !== fakeCorrect), 3)]).map(label => ({
+        const optionsCore = shuffle([
+          fakeCorrect,
+          ...sample(distractors.filter(x => x !== fakeCorrect), 3)
+        ]).map(label => ({
           label,
           isCorrect: !useNone && label === entry.meaning
         }));
 
-        const options = [...optionsCore, { label:'この中に正解はない', isCorrect:useNone, isNone:true }];
-        const [example, translation] = makeExample(entry);
+        const options = [
+          ...optionsCore,
+          { label: 'この中に正解はない', isCorrect: useNone, isNone: true }
+        ];
+
+        const ex = makeExample(entry);
 
         return {
           ...entry,
-          id:`${entry.word}-${idx}`,
+          id: `${entry.word}-${idx}`,
           useNone,
           options,
-          example,
-          translation
+          example: ex[0],
+          translation: ex[1]
         };
       });
     }
 
-    function currentQuestion(){ return state.questions[state.currentIndex]; }
-
-    function autoSpeakCurrentWord(){
-      const q=currentQuestion();
-      if(!q) return;
-      setTimeout(()=>speak(q.word),250);
+    function currentQuestion() {
+      return state.questions[state.currentIndex];
     }
 
-    function startTimer(){
+    function autoSpeakCurrentWord() {
+      const q = currentQuestion();
+      if (!q) return;
+      setTimeout(() => speak(q.word), 250);
+    }
+
+    function startTimer() {
       clearInterval(state.timerId);
-      state.timeLeft=10;
-      state.timerId=setInterval(()=>{
-        state.timeLeft-=1;
-        if(state.timeLeft<=0){
-          state.timeLeft=0;
+      state.timeLeft = 10;
+      state.timerId = setInterval(() => {
+        state.timeLeft -= 1;
+        if (state.timeLeft <= 0) {
+          state.timeLeft = 0;
           clearInterval(state.timerId);
-          revealAnswer(null,true);
+          revealAnswer(null, true);
         }
         render();
-      },1000);
+      }, 1000);
     }
 
-    function resetQuiz(){
+    function resetQuiz() {
       clearInterval(state.timerId);
-      state.questions=buildQuestions();
-      state.currentIndex=0;
-      state.timeLeft=10;
-      state.selectedLabel=null;
-      state.reveal=false;
-      state.score=0;
-      state.results=[];
-      state.screen='quiz';
+      state.questions = buildQuestions();
+      state.currentIndex = 0;
+      state.timeLeft = 10;
+      state.selectedLabel = null;
+      state.reveal = false;
+      state.score = 0;
+      state.results = [];
+      state.screen = 'quiz';
       render();
       startTimer();
       autoSpeakCurrentWord();
     }
 
-    function revealAnswer(label, timedOut=false){
-      if(state.reveal) return;
+    function revealAnswer(label, timedOut = false) {
+      if (state.reveal) return;
       clearInterval(state.timerId);
-      const q=currentQuestion();
-      state.selectedLabel=label;
-      state.reveal=true;
 
-      const selected=q.options.find(o=>o.label===label);
+      const q = currentQuestion();
+      state.selectedLabel = label;
+      state.reveal = true;
+
+      const selected = q.options.find(o => o.label === label);
       const correct = timedOut ? false : !!selected?.isCorrect;
-      if(correct) state.score += 1;
+      if (correct) state.score += 1;
 
       state.results.push({
-        word:q.word,
-        meaning:q.meaning,
-        example:q.example,
-        translation:q.translation,
+        word: q.word,
+        meaning: q.meaning,
+        example: q.example,
+        translation: q.translation,
         correct,
-        selected:timedOut ? '時間切れ' : label
+        selected: timedOut ? '時間切れ' : label
       });
 
       render();
     }
 
-    function nextQuestion(){
-      if(state.currentIndex >= state.questions.length-1){
-        state.screen='summary';
+    function nextQuestion() {
+      if (state.currentIndex >= state.questions.length - 1) {
+        state.screen = 'summary';
         clearInterval(state.timerId);
         render();
         return;
       }
       state.currentIndex += 1;
-      state.timeLeft=10;
-      state.selectedLabel=null;
-      state.reveal=false;
+      state.timeLeft = 10;
+      state.selectedLabel = null;
+      state.reveal = false;
       render();
       startTimer();
       autoSpeakCurrentWord();
     }
 
-    function goHome(){
+    function goHome() {
       clearInterval(state.timerId);
-      state.screen='home';
+      state.screen = 'home';
       render();
     }
 
-    function setQuestionCount(n){
-      state.questionCount=n;
+    function setQuestionCount(n) {
+      state.questionCount = n;
       render();
     }
 
-    function homeHTML(){
+    function homeHTML() {
       return `
         <div class="card">
           <div class="section">
             <h1>Vocab Test App</h1>
             <p class="sub">出題範囲は複数選択できます。問題数を選んでからスタートしてください。</p>
+            ${Object.keys(EXAMPLE_BANK).length ? '' : '<p class="sub warn">例文データがまだ読み込まれていません。</p>'}
           </div>
+
           <div class="section" style="padding-top:0; display:grid; gap:16px;">
             <div>
               <h3>出題範囲</h3>
               <div class="grid-2">
                 ${RANGE_OPTIONS.map(r => {
-                  const active=state.selectedRanges.some(x=>x.start===r.start&&x.end===r.end);
+                  const active = state.selectedRanges.some(x => x.start === r.start && x.end === r.end);
                   return `
-                    <button class="range-btn ${active?'active':''}" data-range-start="${r.start}" data-range-end="${r.end}">
+                    <button class="range-btn ${active ? 'active' : ''}" data-range-start="${r.start}" data-range-end="${r.end}">
                       <div style="font-weight:800;">${r.label}</div>
                       <span class="small">No.${r.start}〜${r.end}</span>
                     </button>`;
@@ -1781,12 +1926,16 @@
             <div>
               <h3>出題数</h3>
               <div class="grid-3">
-                ${[5,10,20].map(n => `<button class="count-btn ${state.questionCount===n?'active':''}" data-count="${n}">${n}問</button>`).join('')}
+                ${[5, 10, 20].map(n => `
+                  <button class="count-btn ${state.questionCount === n ? 'active' : ''}" data-count="${n}">
+                    ${n}問
+                  </button>
+                `).join('')}
               </div>
             </div>
 
             <div class="summary-box">
-              <div><strong>選択中：</strong>${state.selectedRanges.length ? state.selectedRanges.map(r=>r.label).join(', ') : 'なし'}</div>
+              <div><strong>選択中：</strong>${state.selectedRanges.length ? state.selectedRanges.map(r => r.label).join(', ') : 'なし'}</div>
               <div><strong>問題数：</strong>${state.questionCount}問</div>
             </div>
 
@@ -1795,19 +1944,20 @@
         </div>`;
     }
 
-    function quizHTML(){
-      const q=currentQuestion();
-      if(!q) return '';
+    function quizHTML() {
+      const q = currentQuestion();
+      if (!q) return '';
 
-      const progress=Math.max(0,(state.timeLeft/10)*100);
-      const correctOption=q.options.find(o=>o.isCorrect);
+      const progress = Math.max(0, (state.timeLeft / 10) * 100);
+      const correctOption = q.options.find(o => o.isCorrect);
+      const isCorrectNow = !!(state.selectedLabel && correctOption && state.selectedLabel === correctOption.label);
 
       return `
         <div class="card">
           <div class="progress-wrap">
             <div class="row" style="font-size:14px;color:var(--muted);">
-              <span>${state.selectedRanges.map(r=>r.label).join(', ')}</span>
-              <span>第 ${state.currentIndex+1} 問 / ${state.questions.length}</span>
+              <span>${state.selectedRanges.map(r => r.label).join(', ')}</span>
+              <span>第 ${state.currentIndex + 1} 問 / ${state.questions.length}</span>
             </div>
             <div class="row" style="margin-top:6px;font-size:14px;color:var(--muted);">
               <span>正解 ${state.score}</span>
@@ -1828,30 +1978,30 @@
             </div>
 
             <div class="opts">
-              ${q.options.slice(0,4).map((opt,i)=>{
-                let cls='';
-                if(state.reveal){
-                  if(opt.isCorrect) cls='correct';
-                  else if(state.selectedLabel===opt.label) cls='wrong';
+              ${q.options.slice(0, 4).map((opt, i) => {
+                let cls = '';
+                if (state.reveal) {
+                  if (opt.isCorrect) cls = 'correct';
+                  else if (state.selectedLabel === opt.label) cls = 'wrong';
                 }
-                return `<button class="opt-btn ${cls}" data-option-index="${i}" ${state.reveal?'disabled':''}>${opt.label}</button>`;
+                return `<button class="opt-btn ${cls}" data-option-index="${i}" ${state.reveal ? 'disabled' : ''}>${opt.label}</button>`;
               }).join('')}
 
-              ${(()=>{
-                const opt=q.options[4];
-                let cls='none';
-                if(state.reveal){
-                  if(opt.isCorrect) cls+=' correct';
-                  else if(state.selectedLabel===opt.label) cls+=' wrong';
+              ${(() => {
+                const opt = q.options[4];
+                let cls = 'none';
+                if (state.reveal) {
+                  if (opt.isCorrect) cls += ' correct';
+                  else if (state.selectedLabel === opt.label) cls += ' wrong';
                 }
-                return `<button class="opt-btn ${cls}" data-option-index="4" ${state.reveal?'disabled':''}>この中に正解はない</button>`;
+                return `<button class="opt-btn ${cls}" data-option-index="4" ${state.reveal ? 'disabled' : ''}>この中に正解はない</button>`;
               })()}
             </div>
 
             ${state.reveal ? `
               <div class="result-card">
-                <div class="badge ${state.selectedLabel&&correctOption&&state.selectedLabel===correctOption.label?'ok':'ng'}">
-                  ${state.selectedLabel&&correctOption&&state.selectedLabel===correctOption.label?'✅ 正解':'❌ 不正解'}
+                <div class="badge ${isCorrectNow ? 'ok' : 'ng'}">
+                  ${isCorrectNow ? '✅ 正解' : '❌ 不正解'}
                 </div>
                 <div class="result-body">
                   <div><strong>語義：</strong>${q.meaning}</div>
@@ -1859,10 +2009,10 @@
                     <div class="example-text"><strong>例文：</strong>${q.example}</div>
                     <button class="icon-btn" data-speak="${encodeURIComponent(q.example)}">🔊</button>
                   </div>
-                  <div><strong>訳：</strong>${q.translation}</div>
+                  ${q.translation ? `<div><strong>訳：</strong>${q.translation}</div>` : ''}
                 </div>
                 <div class="mt-12">
-                  <button class="primary-btn" data-action="next">${state.currentIndex===state.questions.length-1?'結果を見る':'次の問題へ'}</button>
+                  <button class="primary-btn" data-action="next">${state.currentIndex === state.questions.length - 1 ? '結果を見る' : '次の問題へ'}</button>
                 </div>
               </div>
             ` : ''}
@@ -1870,17 +2020,19 @@
         </div>`;
     }
 
-    function summaryHTML(){
+    function summaryHTML() {
       return `
         <div class="card">
           <div class="section" style="text-align:center; display:grid; gap:14px;">
             <h2>結果</h2>
-            <div class="sub">範囲: ${state.selectedRanges.map(r=>r.label).join(', ')}</div>
+            <div class="sub">範囲: ${state.selectedRanges.map(r => r.label).join(', ')}</div>
             <div class="score-big">${state.score}<span style="font-size:22px; font-weight:700;"> / ${state.questions.length}</span></div>
+
             <div class="split">
               <div class="tile ok">正解<br><span style="font-size:24px;font-weight:800;">${state.score}</span></div>
-              <div class="tile ng">不正解<br><span style="font-size:24px;font-weight:800;">${state.questions.length-state.score}</span></div>
+              <div class="tile ng">不正解<br><span style="font-size:24px;font-weight:800;">${state.questions.length - state.score}</span></div>
             </div>
+
             <div class="split">
               <button class="ghost-btn" data-action="home">ホーム</button>
               <button class="primary-btn" data-action="restart">再挑戦</button>
@@ -1888,11 +2040,11 @@
           </div>
         </div>
 
-        ${state.results.map((r,i)=>`
+        ${state.results.map((r, i) => `
           <div class="history-card">
             <div class="history-head">
-              <div style="font-size:20px;font-weight:800;">${i+1}. ${r.word}</div>
-              <span class="status-pill ${r.correct?'ok':'ng'}">${r.correct?'正解':'不正解'}</span>
+              <div style="font-size:20px;font-weight:800;">${i + 1}. ${r.word}</div>
+              <span class="status-pill ${r.correct ? 'ok' : 'ng'}">${r.correct ? '正解' : '不正解'}</span>
             </div>
             <div style="display:grid; gap:8px; font-size:14px; line-height:1.7;">
               <div><strong>意味：</strong>${r.meaning}</div>
@@ -1900,55 +2052,59 @@
                 <div class="example-text"><strong>例文：</strong>${r.example}</div>
                 <button class="icon-btn" data-speak="${encodeURIComponent(r.example)}">🔊</button>
               </div>
-              <div><strong>訳：</strong>${r.translation}</div>
+              ${r.translation ? `<div><strong>訳：</strong>${r.translation}</div>` : ''}
             </div>
           </div>
         `).join('')}`;
     }
 
-    function render(){
-      const app=document.getElementById('app');
-      app.innerHTML = state.screen==='home' ? homeHTML() : state.screen==='quiz' ? quizHTML() : summaryHTML();
+    function render() {
+      const app = document.getElementById('app');
+      app.innerHTML = state.screen === 'home'
+        ? homeHTML()
+        : state.screen === 'quiz'
+        ? quizHTML()
+        : summaryHTML();
     }
 
-    document.addEventListener('click', function(e){
+    document.addEventListener('click', function(e) {
       const rangeBtn = e.target.closest('[data-range-start]');
-      if(rangeBtn){
-        const start=Number(rangeBtn.dataset.rangeStart);
-        const end=Number(rangeBtn.dataset.rangeEnd);
-        const r=RANGE_OPTIONS.find(x=>x.start===start&&x.end===end);
-        if(r) toggleRange(r);
+      if (rangeBtn) {
+        const start = Number(rangeBtn.dataset.rangeStart);
+        const end = Number(rangeBtn.dataset.rangeEnd);
+        const r = RANGE_OPTIONS.find(x => x.start === start && x.end === end);
+        if (r) toggleRange(r);
         return;
       }
 
       const countBtn = e.target.closest('[data-count]');
-      if(countBtn){
+      if (countBtn) {
         setQuestionCount(Number(countBtn.dataset.count));
         return;
       }
 
       const speakBtn = e.target.closest('[data-speak]');
-      if(speakBtn){
+      if (speakBtn) {
         speak(decodeURIComponent(speakBtn.dataset.speak));
         return;
       }
 
       const actionBtn = e.target.closest('[data-action]');
-      if(actionBtn){
-        const a=actionBtn.dataset.action;
-        if(a==='start') resetQuiz();
-        else if(a==='next') nextQuestion();
-        else if(a==='home') goHome();
-        else if(a==='restart') resetQuiz();
+      if (actionBtn) {
+        const a = actionBtn.dataset.action;
+        if (a === 'start') resetQuiz();
+        else if (a === 'next') nextQuestion();
+        else if (a === 'home') goHome();
+        else if (a === 'restart') resetQuiz();
         return;
       }
 
       const optionBtn = e.target.closest('[data-option-index]');
-      if(optionBtn){
-        if(state.screen!=='quiz' || state.reveal) return;
-        const q=currentQuestion();
-        const idx=Number(optionBtn.dataset.optionIndex);
-        if(!q || !q.options[idx]) return;
+      if (optionBtn) {
+        if (state.screen !== 'quiz' || state.reveal) return;
+        const q = currentQuestion();
+        const idx = Number(optionBtn.dataset.optionIndex);
+        if (!q || !q.options[idx]) return;
         revealAnswer(q.options[idx].label);
       }
     });
